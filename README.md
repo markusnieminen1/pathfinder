@@ -1,4 +1,4 @@
-# stations_pathfinder
+# pathfinder
 Project part of Hive Helsinki curriculum
 
 - Many trains moving at the tracks at the same time.
