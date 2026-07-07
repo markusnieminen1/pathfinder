@@ -46,3 +46,11 @@ Main components identified:
 
 ## Potential optimizations 
 - preprocessing grid to leave out deadends etc.
+
+
+## Guidelines for the code 
+- Use packages 
+- Small, reusable functions
+- 1 - 5 functions per file ideally 
+- filename should reflect what kind of functions it contains 
+- Carry the err to main, so almost all files should return (something, error)
