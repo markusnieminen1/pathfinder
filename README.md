@@ -54,3 +54,16 @@ Main components identified:
 - 1 - 5 functions per file ideally 
 - filename should reflect what kind of functions it contains 
 - Carry the err to main, so almost all files should return (something, error)
+
+
+### Input format
+
+The input file needs to have connections and stations marked properly. 
+
+#### Stations 
+
+Every station will have a name, x coordinate and y coordinate 
+
+For a row to be valid, the station will have 2 commas in total. All spaces will be truncated. 
+
+name,x,y
