@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network Topology Coordinate Map</title>
+    <style>
+        body { margin: 0; background-color: #111216; font-family: sans-serif; overflow: hidden; color: #fff; }
+        #title { position: absolute; top: 20px; left: 20px; pointer-events: none; }
+        h1 { margin: 0; font-size: 18px; }
+        p { margin: 5px 0 0 0; color: #8a8f98; font-size: 12px; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="title">
+        <h1>Transit Grid Map</h1>
+        <p>Locked by Coordinates (Scroll to zoom, Drag background to pan)</p>
+    </div>
+    <canvas id="graphCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        // Camera Pan & Zoom state variables
+        let offsetX = width / 2;
+        let offsetY = height / 2;
+        let scale = 7.0; // Multiplier to blow up small (0-100) coordinates into screen pixels
+        let isDragging = false;
+        let startX, startY;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            render();
+        });
+
+        // 1. Inject Stations with fixed coordinates directly from Go
+        const nodes = [
+            { id: "Stadium_Gates", cx: 60, cy: 40, r: 5 },
+            { id: "South_View", cx: 50, cy: 2, r: 5 },
+            { id: "Union_Station", cx: 48, cy: 51, r: 5 },
+            { id: "Bay_Side", cx: 93, cy: 45, r: 5 },
+            { id: "South_End", cx: 50, cy: 10, r: 5 },
+            { id: "Stone_Quarry", cx: 55, cy: 14, r: 5 },
+            { id: "Mossy_Bank", cx: 12, cy: 17, r: 5 },
+            { id: "Owl_Perch", cx: 14, cy: 26, r: 5 },
+            { id: "West_Gate", cx: 10, cy: 50, r: 5 },
+            { id: "Oak_Ridge", cx: 68, cy: 78, r: 5 },
+            { id: "Marina_Bay", cx: 85, cy: 55, r: 5 },
+            { id: "Dusty_Trail", cx: 83, cy: 28, r: 5 },
+            { id: "Industrial_Zone", cx: 12, cy: 48, r: 5 },
+            { id: "Factory_Row", cx: 7, cy: 46, r: 5 },
+            { id: "Central_Park", cx: 50, cy: 53, r: 5 },
+            { id: "North_Gate", cx: 50, cy: 90, r: 5 },
+            { id: "Dry_Creek", cx: 72, cy: 18, r: 5 },
+            { id: "Red_Rocks", cx: 88, cy: 22, r: 5 },
+            { id: "Eagle_Nest", cx: 22, cy: 88, r: 5 },
+            { id: "Storm_Ridge", cx: 14, cy: 89, r: 5 },
+            { id: "Theater_District", cx: 57, cy: 58, r: 5 },
+            { id: "Summit_Ridge", cx: 52, cy: 95, r: 5 },
+            { id: "West_Lake", cx: 25, cy: 25, r: 5 },
+            { id: "Fern_Gully", cx: 29, cy: 21, r: 5 },
+            { id: "Iron_Works", cx: 5, cy: 51, r: 5 },
+            { id: "Grid_Power", cx: 18, cy: 42, r: 5 },
+            { id: "Stone_Arch", cx: 9, cy: 76, r: 5 },
+            { id: "University_Campus", cx: 40, cy: 60, r: 5 },
+            { id: "New_Town", cx: 53, cy: 53, r: 5 },
+            { id: "Business_District", cx: 45, cy: 45, r: 5 },
+            { id: "Echo_Canyon", cx: 75, cy: 75, r: 5 },
+            { id: "Whispering_Pines", cx: 82, cy: 80, r: 5 },
+            { id: "Shadow_Brook", cx: 88, cy: 72, r: 5 },
+            { id: "Maple_Grove", cx: 79, cy: 68, r: 5 },
+            { id: "Valley_Forge", cx: 52, cy: 12, r: 5 },
+            { id: "Freight_Yard", cx: 15, cy: 45, r: 5 },
+            { id: "Central_Plaza", cx: 50, cy: 50, r: 5 },
+            { id: "Pine_Top", cx: 33, cy: 80, r: 5 },
+            { id: "Ocean_View", cx: 95, cy: 52, r: 5 },
+            { id: "River_Bend", cx: 48, cy: 8, r: 5 },
+            { id: "Tech_Park", cx: 11, cy: 58, r: 5 },
+            { id: "Windy_Point", cx: 28, cy: 78, r: 5 },
+            { id: "Medical_Center", cx: 42, cy: 58, r: 5 },
+            { id: "Alpine_Valley", cx: 38, cy: 88, r: 5 },
+            { id: "Amber_Fields", cx: 66, cy: 71, r: 5 },
+            { id: "East_Port", cx: 90, cy: 50, r: 5 },
+            { id: "Cactus_Ridge", cx: 85, cy: 15, r: 5 },
+            { id: "Sage_Brush", cx: 68, cy: 15, r: 5 },
+            { id: "Mirage_Flats", cx: 76, cy: 32, r: 5 },
+            { id: "Mill_Creek", cx: 42, cy: 7, r: 5 },
+            { id: "Botanical_Gardens", cx: 58, cy: 60, r: 5 },
+            { id: "Tide_Water", cx: 86, cy: 42, r: 5 },
+            { id: "Silver_Spring", cx: 70, cy: 85, r: 5 },
+            { id: "Coral_Reef", cx: 96, cy: 58, r: 5 },
+            { id: "Willow_Springs", cx: 38, cy: 11, r: 5 },
+            { id: "Clover_Field", cx: 62, cy: 13, r: 5 },
+            { id: "Sunset_Boulevard", cx: 8, cy: 52, r: 5 },
+            { id: "High_Pass", cx: 15, cy: 72, r: 5 },
+            { id: "Cloud_Rest", cx: 12, cy: 82, r: 5 },
+            { id: "Science_Museum", cx: 38, cy: 42, r: 5 },
+            { id: "Harbor_Front", cx: 88, cy: 48, r: 5 },
+            { id: "Sand_Dunes", cx: 91, cy: 38, r: 5 },
+            { id: "Desert_Oasis", cx: 80, cy: 20, r: 5 },
+            { id: "Green_Meadows", cx: 45, cy: 15, r: 5 },
+            { id: "Canyon_Rim", cx: 26, cy: 83, r: 5 },
+            { id: "Airport_Link", cx: 62, cy: 42, r: 5 },
+            { id: "Cedar_Bluff", cx: 84, cy: 88, r: 5 },
+            { id: "Shadow_Valley", cx: 15, cy: 19, r: 5 },
+            { id: "Wildwood", cx: 10, cy: 13, r: 5 },
+            { id: "Workers_Square", cx: 14, cy: 55, r: 5 },
+            { id: "Foundry_Lane", cx: 3, cy: 47, r: 5 },
+            { id: "Chinatown", cx: 43, cy: 53, r: 5 },
+            { id: "Little_Italy", cx: 53, cy: 43, r: 5 },
+            { id: "Grand_Terminal", cx: 52, cy: 48, r: 5 },
+            { id: "Timberline", cx: 60, cy: 92, r: 5 },
+            { id: "Sun_Valley", cx: 75, cy: 25, r: 5 },
+            { id: "Mesa_Vista", cx: 91, cy: 10, r: 5 },
+            { id: "Mountain_View", cx: 25, cy: 75, r: 5 },
+            { id: "Rocky_Peak", cx: 20, cy: 80, r: 5 },
+            { id: "Heritage_Park", cx: 42, cy: 38, r: 5 },
+            { id: "Old_Town", cx: 47, cy: 47, r: 5 },
+            { id: "Deer_Run", cx: 58, cy: 9, r: 5 },
+            { id: "Highland_Park", cx: 45, cy: 85, r: 5 },
+            { id: "Birch_Wood", cx: 90, cy: 79, r: 5 },
+            { id: "Seagull_Point", cx: 89, cy: 62, r: 5 },
+            { id: "Forest_Glen", cx: 22, cy: 28, r: 5 },
+            { id: "Fox_Hollow", cx: 20, cy: 11, r: 5 },
+            { id: "Financial_Center", cx: 44, cy: 46, r: 5 },
+            { id: "Frost_Bridge", cx: 55, cy: 87, r: 5 },
+            { id: "Crystal_Lake", cx: 41, cy: 93, r: 5 },
+            { id: "Coastal_Road", cx: 99, cy: 49, r: 5 },
+            { id: "Sandstone", cx: 78, cy: 12, r: 5 },
+            { id: "Deep_Woods", cx: 18, cy: 22, r: 5 },
+            { id: "Riverside_Drive", cx: 47, cy: 40, r: 5 },
+            { id: "Market_Square", cx: 55, cy: 55, r: 5 },
+            { id: "Glacier_View", cx: 48, cy: 99, r: 5 },
+            { id: "Aurora_Heights", cx: 62, cy: 85, r: 5 },
+            { id: "Willow_Creek", cx: 73, cy: 91, r: 5 },
+            { id: "Timber_Creek", cx: 28, cy: 15, r: 5 },
+            { id: "Cliff_Side", cx: 18, cy: 85, r: 5 },
+        ];
+
+        // 2. Inject connections
+        const links = [
+            { source: "Freight_Yard", target: "Industrial_Zone" },
+            { source: "Freight_Yard", target: "Grid_Power" },
+            { source: "Central_Plaza", target: "Grand_Terminal" },
+            { source: "Central_Plaza", target: "Union_Station" },
+            { source: "Central_Plaza", target: "Market_Square" },
+            { source: "Central_Plaza", target: "Central_Park" },
+            { source: "Central_Plaza", target: "North_Gate" },
+            { source: "Pine_Top", target: "Alpine_Valley" },
+            { source: "Pine_Top", target: "Crystal_Lake" },
+            { source: "Ocean_View", target: "East_Port" },
+            { source: "Ocean_View", target: "Coastal_Road" },
+            { source: "Ocean_View", target: "Harbor_Front" },
+            { source: "Ocean_View", target: "Sun_Valley" },
+            { source: "River_Bend", target: "Green_Meadows" },
+            { source: "River_Bend", target: "South_View" },
+            { source: "Tech_Park", target: "Workers_Square" },
+            { source: "Tech_Park", target: "Foundry_Lane" },
+            { source: "Tech_Park", target: "University_Campus" },
+            { source: "Windy_Point", target: "Canyon_Rim" },
+            { source: "Windy_Point", target: "Rocky_Peak" },
+            { source: "Medical_Center", target: "University_Campus" },
+            { source: "Medical_Center", target: "Chinatown" },
+            { source: "Alpine_Valley", target: "Highland_Park" },
+            { source: "Amber_Fields", target: "Birch_Wood" },
+            { source: "Amber_Fields", target: "Echo_Canyon" },
+            { source: "Amber_Fields", target: "Sun_Valley" },
+            { source: "East_Port", target: "Shadow_Brook" },
+            { source: "East_Port", target: "Grand_Terminal" },
+            { source: "Cactus_Ridge", target: "Desert_Oasis" },
+            { source: "Cactus_Ridge", target: "Mesa_Vista" },
+            { source: "Sage_Brush", target: "Dusty_Trail" },
+            { source: "Sage_Brush", target: "Dry_Creek" },
+            { source: "Mirage_Flats", target: "Sandstone" },
+            { source: "Mirage_Flats", target: "Mesa_Vista" },
+            { source: "Mill_Creek", target: "Stone_Quarry" },
+            { source: "Mill_Creek", target: "Willow_Springs" },
+            { source: "Mill_Creek", target: "Deep_Woods" },
+            { source: "Botanical_Gardens", target: "Theater_District" },
+            { source: "Botanical_Gardens", target: "Echo_Canyon" },
+            { source: "Tide_Water", target: "Sand_Dunes" },
+            { source: "Tide_Water", target: "Coral_Reef" },
+            { source: "Silver_Spring", target: "Shadow_Brook" },
+            { source: "Silver_Spring", target: "Oak_Ridge" },
+            { source: "Coral_Reef", target: "Seagull_Point" },
+            { source: "Willow_Springs", target: "Forest_Glen" },
+            { source: "Clover_Field", target: "Deer_Run" },
+            { source: "Clover_Field", target: "South_View" },
+            { source: "Sunset_Boulevard", target: "West_Gate" },
+            { source: "Sunset_Boulevard", target: "Factory_Row" },
+            { source: "Sunset_Boulevard", target: "Workers_Square" },
+            { source: "High_Pass", target: "Cloud_Rest" },
+            { source: "High_Pass", target: "Stone_Arch" },
+            { source: "High_Pass", target: "Summit_Ridge" },
+            { source: "Cloud_Rest", target: "Glacier_View" },
+            { source: "Cloud_Rest", target: "Storm_Ridge" },
+            { source: "Science_Museum", target: "Heritage_Park" },
+            { source: "Science_Museum", target: "West_Lake" },
+            { source: "Science_Museum", target: "Riverside_Drive" },
+            { source: "Harbor_Front", target: "Bay_Side" },
+            { source: "Sand_Dunes", target: "Coastal_Road" },
+            { source: "Desert_Oasis", target: "Sun_Valley" },
+            { source: "Desert_Oasis", target: "Dusty_Trail" },
+            { source: "Desert_Oasis", target: "South_End" },
+            { source: "Green_Meadows", target: "Heritage_Park" },
+            { source: "Canyon_Rim", target: "Stone_Arch" },
+            { source: "Airport_Link", target: "Stadium_Gates" },
+            { source: "Airport_Link", target: "Marina_Bay" },
+            { source: "Cedar_Bluff", target: "Whispering_Pines" },
+            { source: "Cedar_Bluff", target: "Willow_Creek" },
+            { source: "Shadow_Valley", target: "Deep_Woods" },
+            { source: "Shadow_Valley", target: "Wildwood" },
+            { source: "Wildwood", target: "Fox_Hollow" },
+            { source: "Foundry_Lane", target: "Iron_Works" },
+            { source: "Chinatown", target: "Central_Park" },
+            { source: "Little_Italy", target: "Old_Town" },
+            { source: "Little_Italy", target: "Stadium_Gates" },
+            { source: "Grand_Terminal", target: "Financial_Center" },
+            { source: "Grand_Terminal", target: "Oak_Ridge" },
+            { source: "Timberline", target: "Frost_Bridge" },
+            { source: "Timberline", target: "Summit_Ridge" },
+            { source: "Sun_Valley", target: "Stadium_Gates" },
+            { source: "Sun_Valley", target: "Deer_Run" },
+            { source: "Mountain_View", target: "Crystal_Lake" },
+            { source: "Mountain_View", target: "University_Campus" },
+            { source: "Mountain_View", target: "Rocky_Peak" },
+            { source: "Mountain_View", target: "West_Gate" },
+            { source: "Rocky_Peak", target: "Cliff_Side" },
+            { source: "Heritage_Park", target: "Riverside_Drive" },
+            { source: "Old_Town", target: "Central_Park" },
+            { source: "Highland_Park", target: "North_Gate" },
+            { source: "Highland_Park", target: "Echo_Canyon" },
+            { source: "Birch_Wood", target: "Maple_Grove" },
+            { source: "Seagull_Point", target: "Marina_Bay" },
+            { source: "Forest_Glen", target: "West_Lake" },
+            { source: "Forest_Glen", target: "Deep_Woods" },
+            { source: "Fox_Hollow", target: "Mossy_Bank" },
+            { source: "Financial_Center", target: "Business_District" },
+            { source: "Frost_Bridge", target: "Aurora_Heights" },
+            { source: "Sandstone", target: "Red_Rocks" },
+            { source: "Market_Square", target: "New_Town" },
+            { source: "Market_Square", target: "Echo_Canyon" },
+            { source: "Glacier_View", target: "Summit_Ridge" },
+            { source: "Glacier_View", target: "Willow_Creek" },
+            { source: "Timber_Creek", target: "Mossy_Bank" },
+            { source: "Timber_Creek", target: "Owl_Perch" },
+            { source: "Timber_Creek", target: "Industrial_Zone" },
+            { source: "Cliff_Side", target: "Eagle_Nest" },
+            { source: "Cliff_Side", target: "Iron_Works" },
+            { source: "Union_Station", target: "Business_District" },
+            { source: "Union_Station", target: "South_End" },
+            { source: "Bay_Side", target: "Marina_Bay" },
+            { source: "South_End", target: "Valley_Forge" },
+            { source: "Stone_Quarry", target: "Valley_Forge" },
+            { source: "Owl_Perch", target: "Fern_Gully" },
+            { source: "West_Gate", target: "Business_District" },
+            { source: "Oak_Ridge", target: "Maple_Grove" },
+            { source: "Industrial_Zone", target: "West_Lake" },
+            { source: "Factory_Row", target: "Iron_Works" },
+            { source: "North_Gate", target: "Summit_Ridge" },
+            { source: "Dry_Creek", target: "Red_Rocks" },
+            { source: "Eagle_Nest", target: "Storm_Ridge" },
+            { source: "Theater_District", target: "New_Town" },
+            { source: "West_Lake", target: "Fern_Gully" },
+            { source: "West_Lake", target: "Valley_Forge" },
+            { source: "Echo_Canyon", target: "Whispering_Pines" },
+        ];
+
+        // Map node IDs to objects for fast rendering lookups
+        const nodeMap = {};
+        nodes.forEach(n => nodeMap[n.id] = n);
+        links.forEach(l => {
+            l.sourceObj = nodeMap[l.source];
+            l.targetObj = nodeMap[l.target];
+        });
+
+        // Auto-center camera on the average coordinate node cluster at launch
+        if (nodes.length > 0) {
+            let sumX = 0, sumY = 0;
+            nodes.forEach(n => { sumX += n.cx; sumY += n.cy; });
+            const avgX = sumX / nodes.length;
+            const avgY = sumY / nodes.length;
+            
+            // Set offsets so the cluster midpoint maps to screen center
+            offsetX = width / 2 - (avgX * scale);
+            offsetY = height / 2 - (-avgY * scale); // Negative because canvas Y space runs downwards
+        }
+
+        // --- Interaction Handlers (Pan and Zoom) ---
+        canvas.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.clientX - offsetX;
+            startY = e.clientY - offsetY;
+        });
+
+        canvas.addEventListener('mousemove', e => {
+            if (isDragging) {
+                offsetX = e.clientX - startX;
+                offsetY = e.clientY - startY;
+                render();
+            }
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+
+        canvas.addEventListener('wheel', e => {
+            e.preventDefault();
+            const zoomFactor = 1.1;
+            
+            // Track pointer position to zoom relative to your mouse cursor position
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            const graphX = (mouseX - offsetX) / scale;
+            const graphY = (mouseY - offsetY) / scale;
+
+            if (e.deltaY < 0) {
+                scale *= zoomFactor;
+            } else {
+                scale /= zoomFactor;
+            }
+
+            offsetX = mouseX - graphX * scale;
+            offsetY = mouseY - graphY * scale;
+            render();
+        }, { passive: false });
+
+        // Transform formulas mapping raw coordinate bounds to camera space viewport
+        function getScreenX(graphX) { return graphX * scale + offsetX; }
+        function getScreenY(graphY) { return -graphY * scale + offsetY; } // Inverts Y axis so higher Y coordinate goes UP
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw Transit Line Connections
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1.5;
+            links.forEach(l => {
+                if (!l.sourceObj || !l.targetObj) return;
+                ctx.beginPath();
+                ctx.moveTo(getScreenX(l.sourceObj.cx), getScreenY(l.sourceObj.cy));
+                ctx.lineTo(getScreenX(l.targetObj.cx), getScreenY(l.targetObj.cy));
+                ctx.stroke();
+            });
+
+            // Draw Station Points & Labels
+            nodes.forEach(n => {
+                const sx = getScreenX(n.cx);
+                const sy = getScreenY(n.cy);
+
+                // Draw solid layout node points
+                ctx.beginPath();
+                ctx.arc(sx, sy, n.r, 0, 2 * Math.PI);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Draw Text identifiers next to the node point
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '10px monospace';
+                ctx.fillText(n.id, sx + 9, sy + 3);
+            });
+        }
+        
+        render();
+    </script>
+</body>
+</html>

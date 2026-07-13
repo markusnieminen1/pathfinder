@@ -14,4 +14,6 @@ func main() {
 
 	log.Println(grid.StationsMap["Timberline"])
 
+	// grid.ExportTopologyHTML("real_example.html")
+
 }
