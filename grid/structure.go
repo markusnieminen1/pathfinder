@@ -5,6 +5,7 @@ type Station struct {
 	Connections []*Station
 	Coordinates [2]int
 	Name        string
+	Visited     bool
 }
 
 var StationsMap map[string]*Station = map[string]*Station{} // Saves pointer to a Station by Station name
