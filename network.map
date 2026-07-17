@@ -1,0 +1,120 @@
+stations:
+beginning,0,0
+two,8,9
+three,15,16
+four,24,23
+five,1,10
+six,2,11
+seven,3,12
+eight,4,13
+nine,5,14
+ten,6,15
+eleven,14,12
+twelve,15,13
+thirteen,2,0
+fourteen,4,0
+fifteen,6,0
+sixteen,8,0
+seventeen,10,0
+eighteen,12,0
+nineteen,14,5
+twenty,23,15
+twentyone,4,10
+twentytwo,5,12
+twentythree,6,14
+twentyfour,8,15
+twentyfive,10,17
+twentysix,12,19
+twentyseven,12,21
+twentyeight,12,25
+terminus,32,32
+
+connections:
+beginning-two
+beginning-five
+beginning-thirteen
+two-three
+two-twentyone
+three-four
+three-eleven
+four-terminus
+five-six
+six-seven
+seven-eight
+eight-nine
+nine-ten
+ten-three
+eleven-twelve
+twelve-terminus
+thirteen-fourteen
+fourteen-fifteen
+fifteen-sixteen
+sixteen-seventeen
+seventeen-eighteen
+eighteen-nineteen
+nineteen-twenty
+twenty-four
+twentyone-twentytwo
+twentytwo-twentythree
+twentythree-twentyfour
+twentyfour-twentyfive
+twentyfive-twentysix
+twentysix-twentyseven
+twentyseven-twentyeight
+twentyeight-terminus
+
+
+jungle grasslands
+green_belt village
+village mountain
+mountain treetop
+treetop
+grasslands suburbs
+suburbs clouds
+clouds wetlands
+wetlands desert
+farms jungle
+downtown metropolis
+metropolis industrial
+industrial desert
+desert treetop
+jungle green_belt
+farms downtown
+mountain wetlands
+farms mountain
+
+small 32
+small 10
+small 13
+small 00
+large 12
+large 22
+large 31
+00 01
+01 02
+02 03
+03 12
+03 04
+04 05
+05 large
+10 11
+11 12
+12 23
+13 14
+14 11
+15 14
+20 10
+21 20
+21 15
+22 21
+23 24
+24 25
+25 20
+25 30
+30 21
+31 30
+32 33
+33 34
+34 35
+35 36
+36 22
