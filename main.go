@@ -16,12 +16,8 @@ func main() {
 	so_far_best_path := []string{}
 	found_routes := [][]string{}
 
-	shortest := 10_000
+	shortest := 100_000
 
-	grid.FindPath(grid.StationsMap["Golden_Pillar"], grid.StationsMap["Grand_Cargo_Yard"], &current_path, &shortest, &so_far_best_path, &found_routes)
-
-	log.Println(so_far_best_path)
-	log.Println(found_routes)
-	// grid.ExportTopologyHTML("real_example.html")
+	grid.FindPath(grid.StationsMap["Pine_Top"], grid.StationsMap["Windy_Point"], &current_path, &shortest, &so_far_best_path, &found_routes)
 
 }
