@@ -1,0 +1,267 @@
+stations:
+# Central Hubs
+Central_Plaza, 50, 50
+Grand_Terminal, 52, 48
+Union_Station, 48, 51
+Market_Square, 55, 55
+Business_District, 45, 45 # Core economic zone
+Financial_Center, 44, 46
+
+# North Sector
+North_Gate, 50, 90
+Highland_Park, 45, 85
+Summit_Ridge, 52, 95
+Alpine_Valley, 38, 88
+Timberline, 60, 92
+Glacier_View, 48, 99
+Frost_Bridge, 55, 87
+Aurora_Heights, 62, 85
+Pine_Top, 33, 80
+Crystal_Lake, 41, 93
+
+# North-East Sector
+Echo_Canyon, 75, 75
+Whispering_Pines, 82, 80
+Silver_Spring, 70, 85
+Shadow_Brook, 88, 72
+Oak_Ridge, 68, 78
+Maple_Grove, 79, 68
+Cedar_Bluff, 84, 88
+Willow_Creek, 73, 91
+Birch_Wood, 90, 79
+Amber_Fields, 66, 71
+
+# East Sector
+East_Port, 90, 50
+Ocean_View, 95, 52
+Harbor_Front, 88, 48
+Bay_Side, 93, 45
+Marina_Bay, 85, 55
+Coastal_Road, 99, 49
+Sand_Dunes, 91, 38
+Tide_Water, 86, 42
+Coral_Reef, 96, 58
+Seagull_Point, 89, 62
+
+# South-East Sector
+Sun_Valley, 75, 25
+Desert_Oasis, 80, 20
+Cactus_Ridge, 85, 15
+Dry_Creek, 72, 18
+Red_Rocks, 88, 22
+Sandstone, 78, 12
+Dusty_Trail, 83, 28
+Sage_Brush, 68, 15
+Mesa_Vista, 91, 10
+Mirage_Flats, 76, 32
+
+# South Sector
+South_End, 50, 10
+Valley_Forge, 52, 12
+River_Bend, 48, 8
+Green_Meadows, 45, 15
+Stone_Quarry, 55, 14
+Mill_Creek, 42, 7
+Deer_Run, 58, 9
+Willow_Springs, 38, 11
+Clover_Field, 62, 13
+South_View, 50, 2
+
+# South-West Sector
+West_Lake, 25, 25
+Forest_Glen, 22, 28
+Deep_Woods, 18, 22
+Shadow_Valley, 15, 19
+Timber_Creek, 28, 15
+Mossy_Bank, 12, 17
+Fox_Hollow, 20, 11
+Owl_Perch, 14, 26
+Fern_Gully, 29, 21
+Wildwood, 10, 13
+
+# West Sector
+West_Gate, 10, 50
+Sunset_Boulevard, 8, 52
+Industrial_Zone, 12, 48 # High freight traffic
+Freight_Yard, 15, 45
+Factory_Row, 7, 46
+Workers_Square, 14, 55
+Iron_Works, 5, 51
+Grid_Power, 18, 42
+Tech_Park, 11, 58
+Foundry_Lane, 3, 47
+
+# North-West Sector
+Mountain_View, 25, 75
+Rocky_Peak, 20, 80
+Cliff_Side, 18, 85
+High_Pass, 15, 72
+Eagle_Nest, 22, 88
+Cloud_Rest, 12, 82
+Windy_Point, 28, 78
+Storm_Ridge, 14, 89
+Canyon_Rim, 26, 83
+Stone_Arch, 9, 76
+
+# Inner Suburbs & Interchange Loops
+University_Campus, 40, 60
+Medical_Center, 42, 58
+Stadium_Gates, 60, 40
+Airport_Link, 62, 42
+Science_Museum, 38, 42
+Heritage_Park, 42, 38
+Botanical_Gardens, 58, 60
+Theater_District, 57, 58
+Chinatown, 43, 53
+Little_Italy, 53, 43
+Old_Town, 47, 47
+New_Town, 53, 53
+Central_Park, 50, 53
+Riverside_Drive, 47, 40
+
+
+connections:
+# Core Interconnections
+Central_Plaza - Grand_Terminal
+Central_Plaza - Union_Station
+Central_Plaza - Market_Square
+Central_Plaza - Central_Park
+Grand_Terminal - Financial_Center
+Union_Station - Business_District
+Business_District - Financial_Center
+Market_Square - New_Town
+Old_Town - Central_Park
+Chinatown - Central_Park
+Little_Italy - Old_Town
+University_Campus - Medical_Center
+Stadium_Gates - Airport_Link
+Science_Museum - Heritage_Park
+Botanical_Gardens - Theater_District
+
+# North Line Radial and Loops
+North_Gate - Central_Plaza
+North_Gate - Highland_Park
+North_Gate - Summit_Ridge
+Summit_Ridge - Glacier_View
+Glacier_View - Cloud_Rest
+Highland_Park - Alpine_Valley
+Alpine_Valley - Pine_Top
+Timberline - Frost_Bridge
+Frost_Bridge - Aurora_Heights
+Pine_Top - Crystal_Lake
+Crystal_Lake - Mountain_View
+Summit_Ridge - Timberline
+
+# North-East Ring
+Echo_Canyon - Market_Square
+Echo_Canyon - Whispering_Pines
+Whispering_Pines - Cedar_Bluff
+Silver_Spring - Shadow_Brook
+Oak_Ridge - Maple_Grove
+Maple_Grove - Birch_Wood
+Cedar_Bluff - Willow_Creek
+Willow_Creek - Glacier_View
+Birch_Wood - Amber_Fields
+Amber_Fields - Echo_Canyon
+Silver_Spring - Oak_Ridge
+Shadow_Brook - East_Port
+
+# East Coast Arterial
+East_Port - Grand_Terminal
+East_Port - Ocean_View
+Ocean_View - Coastal_Road
+Harbor_Front - Bay_Side
+Bay_Side - Marina_Bay
+Coastal_Road - Sand_Dunes
+Sand_Dunes - Tide_Water
+Tide_Water - Coral_Reef
+Coral_Reef - Seagull_Point
+Seagull_Point - Marina_Bay
+Harbor_Front - Ocean_View
+Marina_Bay - Airport_Link
+
+# South-East Desert Line
+Sun_Valley - Stadium_Gates
+Sun_Valley - Desert_Oasis
+Desert_Oasis - Cactus_Ridge
+Cactus_Ridge - Mesa_Vista
+Dry_Creek - Red_Rocks
+Red_Rocks - Sandstone
+Sandstone - Mirage_Flats
+Dusty_Trail - Sage_Brush
+Sage_Brush - Dry_Creek
+Mesa_Vista - Mirage_Flats
+Desert_Oasis - Dusty_Trail
+Sun_Valley - Amber_Fields
+
+# South River Line
+South_End - Union_Station
+South_End - Valley_Forge
+Valley_Forge - Stone_Quarry
+River_Bend - Green_Meadows
+Stone_Quarry - Mill_Creek
+Mill_Creek - Willow_Springs
+Deer_Run - Clover_Field
+Clover_Field - South_View
+South_View - River_Bend
+Green_Meadows - Heritage_Park
+Willow_Springs - Forest_Glen
+Deer_Run - Sun_Valley
+
+# South-West Woodland Loop
+West_Lake - Science_Museum
+West_Lake - Forest_Glen
+Forest_Glen - Deep_Woods
+Deep_Woods - Shadow_Valley
+Timber_Creek - Mossy_Bank
+Mossy_Bank - Fox_Hollow
+Fox_Hollow - Wildwood
+Owl_Perch - Fern_Gully
+Fern_Gully - West_Lake
+Wildwood - Shadow_Valley
+Timber_Creek - Owl_Perch
+Deep_Woods - Mill_Creek
+
+# West Industrial Radial
+West_Gate - Business_District
+West_Gate - Sunset_Boulevard
+Sunset_Boulevard - Factory_Row
+Industrial_Zone - Freight_Yard
+Freight_Yard - Grid_Power
+Factory_Row - Iron_Works
+Workers_Square - Tech_Park
+Tech_Park - Foundry_Lane
+Iron_Works - Foundry_Lane
+Workers_Square - Sunset_Boulevard
+Industrial_Zone - West_Lake
+
+# North-West Mountain Crossings
+Mountain_View - University_Campus
+Mountain_View - Rocky_Peak
+Rocky_Peak - Cliff_Side
+Cliff_Side - Eagle_Nest
+High_Pass - Cloud_Rest
+Eagle_Nest - Storm_Ridge
+Cloud_Rest - Storm_Ridge
+Windy_Point - Canyon_Rim
+Canyon_Rim - Stone_Arch
+Stone_Arch - High_Pass
+Windy_Point - Rocky_Peak
+Cliff_Side - Iron_Works
+
+# Cross-Grid Express Connectors
+Highland_Park - Echo_Canyon
+Oak_Ridge - Grand_Terminal
+Ocean_View - Sun_Valley
+Desert_Oasis - South_End
+Valley_Forge - West_Lake
+Timber_Creek - Industrial_Zone
+West_Gate - Mountain_View
+Summit_Ridge - High_Pass
+Tech_Park - University_Campus
+Botanical_Gardens - Echo_Canyon
+Riverside_Drive - Science_Museum
+Riverside_Drive - Heritage_Park
+Chinatown - Medical_Center
+Little_Italy - Stadium_Gates
+New_Town - Theater_District
