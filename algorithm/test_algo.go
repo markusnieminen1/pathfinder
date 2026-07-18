@@ -1,12 +1,12 @@
 package algorithm
 
 import (
-	"pathfinder/grid"
+	"pathfinder/data"
 	"slices"
 )
 
 // Depth-First-Search
-func FindPathDFS(start, end *grid.Station, path *[]string, shortest_route_len *int, best_route *[]string, found_routes *[][]string) {
+func FindPathDFS(start, end *data.Station, path *[]string, shortest_route_len *int, best_route *[]string, found_routes *[][]string) {
 
 	// Ignore loops
 	if start.Visited || len(*path) >= *shortest_route_len {

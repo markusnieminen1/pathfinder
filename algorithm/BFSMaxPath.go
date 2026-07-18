@@ -2,7 +2,7 @@ package algorithm
 
 import (
 	"container/list"
-	"pathfinder/grid"
+	"pathfinder/data"
 	"strings"
 )
 
@@ -90,7 +90,7 @@ import (
 
 // grid.StationsMap["Pine_Top"]
 
-func BreadthFirstSearchStations(root, target *grid.Station, path *[]string) {
+func BreadthFirstSearchStations(root, target *data.Station, path *[]string) {
 	//const notFound = "not_found" // default value
 
 	// check if root and target exist in the tree
@@ -105,7 +105,7 @@ func BreadthFirstSearchStations(root, target *grid.Station, path *[]string) {
 
 	// while queue has elements, keep iterating
 	for queue.Len() > 0 {
-		currentNode := queue.Front().Value.(*grid.Station) // get first element
+		currentNode := queue.Front().Value.(*data.Station) // get first element
 		queue.Remove(queue.Front())                        // remove first element from queue
 
 		// compare if node is equals to target

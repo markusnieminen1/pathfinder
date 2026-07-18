@@ -7,6 +7,7 @@ package grid
 
 import (
 	"errors"
+	"pathfinder/data"
 )
 
 func InitGrid(input_path string) error {
@@ -39,13 +40,13 @@ func InitGrid(input_path string) error {
 			return errors.Join(err, errors.New("Invalid data for station: "+station_data))
 		}
 
-		_, station_exists := StationsMap[valid.Name]
+		_, station_exists := data.StationsMap[valid.Name]
 
 		if station_exists && !ALLOW_CORRUPT_DATA {
 			return errors.New("Duplicate station name: " + valid.Name)
 		}
 
-		StationsMap[valid.Name] = &valid
+		data.StationsMap[valid.Name] = &valid
 
 	}
 

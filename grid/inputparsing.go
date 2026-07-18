@@ -2,6 +2,7 @@ package grid
 
 import (
 	"errors"
+	"pathfinder/data"
 	"slices"
 	"strconv"
 	"strings"
@@ -84,23 +85,23 @@ func GetStationItems(s string) (string, [2]int, error) {
 
 }
 
-func BuildStation(s string) (Station, error) {
+func BuildStation(s string) (data.Station, error) {
 
 	name, coords, err := GetStationItems(s)
 
 	if err != nil {
-		return Station{}, err
+		return data.Station{}, err
 	}
 
-	_, locationExists := CoordsMap[coords]
+	_, locationExists := data.CoordsMap[coords]
 
 	if locationExists {
-		return Station{}, errors.New("Duplicate station by coordinates. " + s)
+		return data.Station{}, errors.New("Duplicate station by coordinates. " + s)
 	}
 
-	station := Station{Coordinates: coords, Name: name}
+	station := data.Station{Coordinates: coords, Name: name}
 
-	CoordsMap[coords] = &station
+	data.CoordsMap[coords] = &station
 
 	return station, nil
 }
@@ -113,13 +114,13 @@ func CreateConnection(s string) error {
 		return errors.New("Connection format invalid. Should have station1-station2. " + s)
 	}
 
-	station1, found := StationsMap[stations[0]]
+	station1, found := data.StationsMap[stations[0]]
 
 	if !found {
 		return errors.New("Station does not exist in the grid: " + stations[0])
 	}
 
-	station2, found := StationsMap[stations[1]]
+	station2, found := data.StationsMap[stations[1]]
 
 	if !found {
 		return errors.New("Station does not exist in the grid: " + stations[1])
