@@ -18,20 +18,21 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	current_path := []string{}
-	so_far_best_path := []string{}
-	found_routes := [][]string{}
-
-	shortest := 100_000
 	start_station := data.StationsMap["Crystal_Crossing"]
 	end_station := data.StationsMap["Stone_Row"]
+	/*
+		current_path := []string{}
+		so_far_best_path := []string{}
+		found_routes := [][]string{}
 
-	algorithm.FindPathDFS(start_station, end_station, &current_path, &shortest, &so_far_best_path, &found_routes)
+		shortest := 100_000
 
+		algorithm.FindPathDFS(start_station, end_station, &current_path, &shortest, &so_far_best_path, &found_routes)
+	*/
+	BFS_path := []string{}
+	algorithm.BreadthFirstSearchStations(start_station, end_station, &BFS_path)
 	/*
 		BFS_path := []string{}
-		algorithm.BreadthFirstSearchStations(data.StationsMap["Pine_Top"], data.StationsMap["Windy_Point"], &BFS_path)
 
 		fmt.Println(so_far_best_path)
 		fmt.Println(BFS_path)
