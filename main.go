@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"pathfinder/algorithm"
 	"pathfinder/grid"
 )
 
@@ -20,9 +21,9 @@ func main() {
 
 	shortest := 100_000
 
-	grid.FindPath(grid.StationsMap["Pine_Top"], grid.StationsMap["Windy_Point"], &current_path, &shortest, &so_far_best_path, &found_routes)
+	algorithm.FindPathDFS(grid.StationsMap["Pine_Top"], grid.StationsMap["Windy_Point"], &current_path, &shortest, &so_far_best_path, &found_routes)
 
-	grid.BreadthFirstSearchStations(grid.StationsMap["Pine_Top"], grid.StationsMap["Windy_Point"], &BFS_path)
+	algorithm.BreadthFirstSearchStations(grid.StationsMap["Pine_Top"], grid.StationsMap["Windy_Point"], &BFS_path)
 
 	fmt.Println(so_far_best_path)
 	fmt.Println(BFS_path)

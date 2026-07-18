@@ -1,11 +1,12 @@
-package grid
+package algorithm
 
 import (
+	"pathfinder/grid"
 	"slices"
 )
 
 // Depth-First-Search
-func FindPath(start, end *Station, path *[]string, shortest_route_len *int, best_route *[]string, found_routes *[][]string) {
+func FindPathDFS(start, end *grid.Station, path *[]string, shortest_route_len *int, best_route *[]string, found_routes *[][]string) {
 
 	// Ignore loops
 	if start.Visited || len(*path) >= *shortest_route_len {
@@ -41,7 +42,7 @@ func FindPath(start, end *Station, path *[]string, shortest_route_len *int, best
 
 	// Search deeper
 	for _, nodeptr := range start.Connections {
-		FindPath(nodeptr, end, path, shortest_route_len, best_route, found_routes)
+		FindPathDFS(nodeptr, end, path, shortest_route_len, best_route, found_routes)
 	}
 
 	// Pop last item out and return
