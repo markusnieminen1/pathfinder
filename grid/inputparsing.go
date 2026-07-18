@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var RunningID int = 1
+
 // Function to extract valid characters if the row is a comment
 func TrimLines(s_slice []string) []string {
 
@@ -75,10 +77,22 @@ func GetStationItems(s string) (string, [2]int, error) {
 		return "", [2]int{}, errors.Join(err, errors.New("Cannot parse X coordinate (index 1)"+s))
 	}
 
+	if data.MAX_X_COORDINATE < coord1 {
+		data.MAX_X_COORDINATE = coord1
+	} else if data.MIN_X_COORDINATE > coord1 {
+		data.MIN_X_COORDINATE = coord1
+	}
+
 	coord2, err := strconv.Atoi(splitted[2])
 
 	if err != nil {
 		return "", [2]int{}, errors.Join(err, errors.New("Cannot parse X coordinate (index 2)"+s))
+	}
+
+	if data.MAX_Y_COORDINATE < coord2 {
+		data.MAX_Y_COORDINATE = coord2
+	} else if data.MIN_Y_COORDINATE > coord2 {
+		data.MIN_Y_COORDINATE = coord2
 	}
 
 	return name, [2]int{coord1, coord2}, nil
@@ -99,7 +113,8 @@ func BuildStation(s string) (data.Station, error) {
 		return data.Station{}, errors.New("Duplicate station by coordinates. " + s)
 	}
 
-	station := data.Station{Coordinates: coords, Name: name}
+	station := data.Station{Coordinates: coords, Name: name, ID: RunningID}
+	RunningID += 1
 
 	data.CoordsMap[coords] = &station
 

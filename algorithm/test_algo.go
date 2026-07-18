@@ -14,7 +14,7 @@ func FindPathDFS(start, end *data.Station, path *[]string, shortest_route_len *i
 	}
 
 	start.Visited = true
-
+	data.Events = append(data.Events, data.SearchEvent{Station_Id: start.ID, Visited: true})
 	*path = append(*path, start.Name)
 
 	// Check if the node we are looking is in the next nodes
@@ -36,6 +36,7 @@ func FindPathDFS(start, end *data.Station, path *[]string, shortest_route_len *i
 
 		*path = (*path)[:len(*path)-2]
 		start.Visited = false
+		data.Events = append(data.Events, data.SearchEvent{Station_Id: start.ID, Visited: false})
 
 		return
 	}
@@ -48,6 +49,7 @@ func FindPathDFS(start, end *data.Station, path *[]string, shortest_route_len *i
 	// Pop last item out and return
 	*path = (*path)[:len(*path)-1]
 	start.Visited = false
+	data.Events = append(data.Events, data.SearchEvent{Station_Id: start.ID, Visited: false})
 
 	// return
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph</title>
+</head>
+
+<script>
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function applyEvent(e) {
+        const circle = document.getElementById(e.i);
+        // Change the dots 
+        if (circle) circle.setAttribute('fill', e.v ? 'Red' : 'MediumPurple');
+    }
+
+    async function fetchBatch() {
+        const res = await fetch(`/events`);
+        
+        if (!res.ok) throw new Error(`Failed to get events: ${res.status}`);
+        
+        return res.json();
+    }
+
+    async function run() {
+        const events = await fetchBatch();
+        for (const event of events) {
+            applyEvent(event);
+            await sleep(200);
+        }
+    }
+
+    run();
+
+</script>
+
+<body>
+        <svg viewBox="{{.ViewBox}}" style="width: 100vw; height: 100vh;">
+        {{range .Graph}}
+            {{$station := .}}
+            <!--Draws connections -->
+            {{range .Connections}}
+            <line x1="{{index $station.Coordinates 0}}" y1="{{index $station.Coordinates 1}}"
+                x2="{{index .Coordinates 0}}" y2="{{index .Coordinates 1}}"
+                stroke="black" stroke-width="0.2"/>
+            {{end}}
+        {{end}}
+        <!--Draws stations -->
+        {{range .Graph}}
+            <circle cx="{{index .Coordinates 0}}" cy="{{index .Coordinates 1}}" r="1"
+                    fill="Lavender" id="{{.ID}}" />
+            <text x="{{index .Coordinates 0}}" y="{{index .Coordinates 1}}" font-size="1">{{.Name}}</text>    
+        {{end}}
+
+        <circle cx="{{index .Start.Coordinates 0}}" cy="{{index .Start.Coordinates 1}}" r="1" fill="DarkOrange" />
+<text x="{{index .Start.Coordinates 0}}" y="{{index .Start.Coordinates 1}}" font-size="1">{{.Start.Name}}</text>
+
+<circle cx="{{index .End.Coordinates 0}}" cy="{{index .End.Coordinates 1}}" r="1" fill="DarkOrange" />
+<text x="{{index .End.Coordinates 0}}" y="{{index .End.Coordinates 1}}" font-size="1">{{.End.Name}}</text>
+    </svg>
+</body>
+</html>
