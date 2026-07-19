@@ -1,4 +1,4 @@
-package grid
+package data
 
 // Basic structure of the node
 type Station struct {

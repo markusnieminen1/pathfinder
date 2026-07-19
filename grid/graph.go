@@ -3,6 +3,7 @@ package grid
 import (
 	"fmt"
 	"os"
+	"pathfinder/data"
 )
 
 /*
@@ -65,7 +66,7 @@ func ExportTopologyHTML(filename string) error {
 `)
 
 	// Loop over map and write out fixed coordinates
-	for name, station := range StationsMap {
+	for name, station := range data.StationsMap {
 		// Flip or offset the Y calculation if your coordinates assume 0,0 is bottom-left
 		fmt.Fprintf(f, "            { id: %q, cx: %d, cy: %d, r: 5 },\n", name, station.Coordinates[0], station.Coordinates[1])
 	}
@@ -74,7 +75,7 @@ func ExportTopologyHTML(filename string) error {
 
 	// Inject structural linkages uniquely
 	seen := make(map[string]bool)
-	for name, station := range StationsMap {
+	for name, station := range data.StationsMap {
 		for _, conn := range station.Connections {
 			key1 := name + "|||" + conn.Name
 			key2 := conn.Name + "|||" + name
