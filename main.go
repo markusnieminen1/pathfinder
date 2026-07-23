@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"pathfinder/algorithm"
 	"pathfinder/data"
@@ -30,6 +30,6 @@ func main() {
 
 	algorithm.MaxPaths(&found_routes, &first_path, &second_path)
 
-	fmt.Println(so_far_best_path)
-	fmt.Println(BFS_path)
+	//fmt.Println(so_far_best_path)
+	//fmt.Println(BFS_path)
 }
