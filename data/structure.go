@@ -14,3 +14,14 @@ var CoordsMap map[[2]int]*Station = map[[2]int]*Station{}   // Saves pointer to 
 type LinkedList struct {
 	NodeGrid []Station
 }
+
+//for ComboTrains, should be sorted by shortest path in turns first, and then max amount of paths first
+type GroupedPaths struct {
+	Paths [][]string
+	AmountOfPaths int
+	LongestPathInTurns int
+}
+
+type GroupsOfPaths struct {
+	Groups []GroupedPaths
+}
