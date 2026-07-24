@@ -14,10 +14,11 @@ var CoordsMap map[[2]int]*Station = map[[2]int]*Station{}   // Saves pointer to 
 var MAX_X_COORDINATE, MAX_Y_COORDINATE, MIN_X_COORDINATE, MIN_Y_COORDINATE int
 
 type VisualisingData struct {
-	Graph   *map[string]*Station
-	ViewBox string
-	Start   *Station
-	End     *Station
+	Graph             *map[string]*Station
+	ViewBox           string
+	Start             *Station
+	End               *Station
+	Fastest_route_ids *[]Station
 }
 
 type SearchEvent struct {

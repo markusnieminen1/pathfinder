@@ -21,11 +21,11 @@ func Viewbox(padding int) string {
 	return fmt.Sprintf("%d %d %d %d", minX, minY, width, height)
 }
 
-func Roothandler(start, end *data.Station) http.HandlerFunc {
+func Roothandler(start, end *data.Station, fastest_route *[]data.Station) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		err := TEMPLATE.Execute(w, data.VisualisingData{Graph: &data.StationsMap, ViewBox: Viewbox(10), Start: start, End: end})
+		err := TEMPLATE.Execute(w, data.VisualisingData{Graph: &data.StationsMap, ViewBox: Viewbox(10), Start: start, End: end, Fastest_route_ids: fastest_route})
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -13,27 +13,27 @@ import (
 )
 
 func main() {
-	err := grid.InitGrid("test_files/ai_generated2.map")
+	err := grid.InitGrid("test_files/hive.map")
 
 	if err != nil {
 		log.Fatalln(err)
 	}
-	start_station := data.StationsMap["Crystal_Crossing"]
-	end_station := data.StationsMap["Stone_Row"]
-	/*
-		current_path := []string{}
-		so_far_best_path := []string{}
-		found_routes := [][]string{}
+	start_station := data.StationsMap["Hive1"]
+	end_station := data.StationsMap["Hive100"]
 
-		shortest := 100_000
+	current_path := []data.Station{}
+	so_far_best_path := []data.Station{}
+	found_routes := [][]data.Station{}
 
-		algorithm.FindPathDFS(start_station, end_station, &current_path, &shortest, &so_far_best_path, &found_routes)
-	*/
-	BFS_path := []string{}
+	shortest := 100_000
+
+	algorithm.FindPathDFS(start_station, end_station, &current_path, &shortest, &so_far_best_path, &found_routes)
+
+	/*BFS_path := []string{}
 	algorithm.BreadthFirstSearchStations(start_station, end_station, &BFS_path)
-	/*
-		BFS_path := []string{}
+	*/
 
+	/*
 		fmt.Println(so_far_best_path)
 		fmt.Println(BFS_path)
 	*/
@@ -41,6 +41,6 @@ func main() {
 	// RUN WEBSERVER
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
-	visualising.InitWeb(ctx, start_station, end_station)
+	visualising.InitWeb(ctx, start_station, end_station, &so_far_best_path)
 
 }
