@@ -1,0 +1,247 @@
+stations:
+# Letter H 
+Hive1, 0, 10
+Hive2, 0, 9
+Hive3, 0, 8
+Hive4, 0, 7
+Hive5, 0, 6
+Hive6, 0, 5
+Hive7, 0, 4
+Hive8, 0, 3
+Hive9, 0, 2
+Hive10, 0, 1
+
+Hive11, 2, 10
+Hive12, 2, 9
+Hive13, 2, 8
+Hive14, 2, 7
+Hive15, 2, 6
+Hive17, 2, 4
+Hive18, 2, 3
+Hive19, 2, 2
+Hive20, 2, 1
+
+
+Hive21, 5, 10
+Hive22, 5, 9
+Hive23, 5, 8
+Hive24, 5, 7
+Hive25, 5, 6
+Hive27, 5, 4
+Hive28, 5, 3
+Hive29, 5, 2
+Hive30, 5, 1
+
+Hive31, 7, 10
+Hive32, 7, 9
+Hive33, 7, 8
+Hive34, 7, 7
+Hive35, 7, 6
+Hive36, 7, 5
+Hive37, 7, 4
+Hive38, 7, 3
+Hive39, 7, 2
+Hive40, 7, 1
+
+Hive41, 9, 10
+Hive42, 9, 9
+Hive43, 9, 8
+Hive44, 9, 7
+Hive45, 9, 6
+Hive46, 9, 5
+Hive47, 9, 4
+Hive48, 9, 3
+Hive49, 9, 2
+Hive50, 9, 1
+
+Hive51, 11, 10
+Hive52, 11, 9
+Hive53, 11, 8
+Hive54, 11, 7
+Hive55, 11, 6
+Hive56, 11, 5
+Hive57, 11, 4
+Hive58, 11, 3
+Hive59, 11, 2
+Hive60, 11, 1
+
+Hive61, 13, 1
+Hive62, 16, 10
+Hive63, 16, 7
+Hive64, 20, 1
+Hive65, 15, 1
+Hive66, 18, 1
+
+Hive71, 22, 10
+Hive72, 22, 9
+Hive73, 22, 8
+Hive74, 22, 7
+Hive75, 22, 6
+Hive76, 22, 5
+Hive77, 22, 4
+Hive78, 22, 3
+Hive79, 22, 2
+Hive80, 22, 1
+
+Hive81, 23, 1
+Hive82, 24, 1
+Hive83, 25, 1
+Hive84, 26, 1
+Hive85, 27, 1
+
+Hive86, 23, 10
+Hive87, 24, 10
+Hive88, 25, 10
+Hive89, 26, 10
+Hive90, 27, 10
+
+Hive91, 27, 9
+Hive92, 27, 8
+Hive93, 26, 8
+Hive94, 25, 8
+Hive95, 24, 8
+
+Hive96, 24, 7
+Hive97, 24, 6
+Hive98, 25, 6
+Hive99, 26, 6
+Hive100, 27, 6
+Hive101, 27, 5
+Hive102, 27, 4
+Hive103, 26, 4
+Hive104, 25, 4
+Hive105, 24, 4
+Hive106, 24, 3
+
+Hive107, 25, 3
+Hive108, 26, 3
+Hive109, 27, 3
+Hive110, 27, 2
+
+
+connections:
+Hive1-Hive2
+Hive2-Hive3
+Hive3-Hive4
+Hive4-Hive5
+Hive5-Hive6
+Hive6-Hive7
+Hive7-Hive8
+Hive8-Hive9
+Hive9-Hive10
+Hive1-Hive11
+
+Hive10-Hive20
+Hive17-Hive27
+
+Hive15-Hive25
+Hive20-Hive19
+Hive19-Hive18 
+Hive18-Hive17
+Hive11-Hive12
+Hive12-Hive13
+Hive13-Hive14
+Hive14-Hive15
+
+Hive30-Hive29
+Hive29-Hive28 
+Hive28-Hive27
+Hive21-Hive22
+Hive22-Hive23
+Hive23-Hive24
+Hive24-Hive25
+
+Hive30-Hive40
+Hive21-Hive31
+
+Hive31-Hive32
+Hive32-Hive33
+Hive33-Hive34
+Hive34-Hive35
+Hive35-Hive36
+Hive36-Hive37
+Hive37-Hive38
+Hive38-Hive39
+Hive39-Hive40
+
+
+Hive36-Hive46
+
+Hive41-Hive42
+Hive42-Hive43
+Hive43-Hive44
+Hive44-Hive45
+Hive45-Hive46
+Hive46-Hive47
+Hive47-Hive48
+Hive48-Hive49
+Hive49-Hive50
+
+Hive51-Hive52
+Hive52-Hive53
+Hive53-Hive54
+Hive54-Hive55
+Hive55-Hive56
+Hive56-Hive57
+Hive57-Hive58
+Hive58-Hive59
+Hive59-Hive60
+
+Hive50-Hive60
+Hive41-Hive51
+
+Hive51-Hive62
+Hive62-Hive61
+Hive61-Hive65
+Hive65-Hive63
+Hive66-Hive63
+Hive66-Hive64
+Hive62-Hive64
+
+Hive80-Hive64
+
+Hive71-Hive72
+Hive72-Hive73
+Hive73-Hive74
+Hive74-Hive75
+Hive75-Hive76
+Hive76-Hive77
+Hive77-Hive78
+Hive78-Hive79
+Hive79-Hive80
+
+Hive81-Hive82
+Hive82-Hive83
+Hive83-Hive84
+Hive84-Hive85
+
+Hive86-Hive87
+Hive87-Hive88
+Hive88-Hive89
+Hive89-Hive90
+
+Hive71-Hive86
+Hive80-Hive81
+
+Hive90-Hive91
+Hive94-Hive93
+Hive93-Hive92
+Hive92-Hive91
+Hive95-Hive94
+
+Hive95-Hive96
+Hive96-Hive97
+Hive85-Hive110
+Hive110-Hive109
+Hive109-Hive108
+Hive108-Hive107
+Hive107-Hive106
+Hive106-Hive105
+Hive105-Hive104
+Hive104-Hive103
+Hive103-Hive102
+Hive102-Hive101
+Hive101-Hive100
+Hive100-Hive99
+Hive99-Hive98
+Hive98-Hive97
