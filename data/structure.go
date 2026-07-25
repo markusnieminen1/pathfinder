@@ -28,6 +28,20 @@ type SearchEvent struct {
 
 var Events []SearchEvent
 
+// Function that can be swapped
+var RecordEvent = func(id int, visited bool) {
+	Events = append(Events, SearchEvent{Station_Id: id, Visited: visited})
+}
+
+func noopRecordEvent(id int, visited bool) {}
+
+func SetLoggingEnabled(enabled bool) {
+
+	if !enabled {
+		RecordEvent = noopRecordEvent
+	}
+}
+
 type LinkedList struct {
 	NodeGrid []Station
 }

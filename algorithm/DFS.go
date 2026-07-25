@@ -17,7 +17,7 @@ func FindPathDFS(start, end *data.Station, path *[]data.Station,
 	}
 
 	start.Visited = true
-	data.Events = append(data.Events, data.SearchEvent{Station_Id: start.ID, Visited: true})
+	data.RecordEvent(start.ID, true)
 	*path = append(*path, *start)
 
 	// Check if the node we are looking is in the next nodes
@@ -39,7 +39,7 @@ func FindPathDFS(start, end *data.Station, path *[]data.Station,
 
 		*path = (*path)[:len(*path)-2]
 		start.Visited = false
-		data.Events = append(data.Events, data.SearchEvent{Station_Id: start.ID, Visited: false})
+		data.RecordEvent(start.ID, false)
 
 		return
 	}
@@ -52,7 +52,7 @@ func FindPathDFS(start, end *data.Station, path *[]data.Station,
 	// Pop last item out and return
 	*path = (*path)[:len(*path)-1]
 	start.Visited = false
-	data.Events = append(data.Events, data.SearchEvent{Station_Id: start.ID, Visited: false})
+	data.RecordEvent(start.ID, false)
 
 	// return
 
