@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"pathfinder/algorithm"
+	"pathfinder/arguments"
 	"pathfinder/data"
 	"pathfinder/grid"
 	"pathfinder/visualising"
@@ -13,25 +14,43 @@ import (
 )
 
 func main() {
-	err := grid.InitGrid("test_files/hive.map")
+
+	abs_filepath, start_station_name, end_station_name, _, err := arguments.ReadArgs()
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Println("Invalid arguments. " + err.Error())
+		log.Fatalln(arguments.GetHelp())
 	}
-	start_station := data.StationsMap["Hive1"]
-	end_station := data.StationsMap["Hive100"]
+
+	err = grid.InitGrid(abs_filepath)
+
+	if err != nil {
+		log.Fatalln("Failed to Initialise the grid: " + err.Error())
+	}
+
+	start_station, data_exists := data.StationsMap[start_station_name]
+
+	if !data_exists {
+		log.Fatalln("Start station does not exist in the map! ('" + start_station_name + "')")
+	}
+
+	end_station, data_exists := data.StationsMap[end_station_name]
+
+	if !data_exists {
+		log.Fatalln("End station does not exist in the map! ('" + end_station_name + "')")
+	}
 
 	current_path := []data.Station{}
 	so_far_best_path := []data.Station{}
 	found_routes := [][]data.Station{}
 
-	shortest := 100_000
+	// Do not look further than this amount of nodes
+	shortest := 10_000
 
 	algorithm.FindPathDFS(start_station, end_station, &current_path, &shortest, &so_far_best_path, &found_routes)
 
-	/*BFS_path := []string{}
+	BFS_path := []string{}
 	algorithm.BreadthFirstSearchStations(start_station, end_station, &BFS_path)
-	*/
 
 	/*
 		fmt.Println(so_far_best_path)
