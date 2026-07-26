@@ -106,6 +106,7 @@ func BreadthFirstSearchStations(root, target *data.Station, path *[]string) {
 	// while queue has elements, keep iterating
 	for queue.Len() > 0 {
 		currentNode := queue.Front().Value.(*data.Station) // get first element
+		data.RecordEvent(currentNode.ID, true)             // Record item for the visualisation
 		queue.Remove(queue.Front())                        // remove first element from queue
 
 		// compare if node is equals to target
