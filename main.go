@@ -25,6 +25,12 @@ func main() {
 		arguments.PrintHelp()
 	}
 
+	current_path := []string{}
+	so_far_best_path := []string{}
+	found_routes := [][]string{}
+	BFS_path := []string{}
+	first_path := []string{}
+	second_path := []string{}
 	err = grid.InitGrid(abs_filepath)
 
 	if err != nil {
@@ -43,6 +49,10 @@ func main() {
 		log.Fatalln("End station does not exist in the map! ('" + end_station_name + "')")
 	}
 
+	algorithm.MaxPaths(&found_routes, &first_path, &second_path)
+
+	//fmt.Println(so_far_best_path)
+	//fmt.Println(BFS_path)
 	data.SetLoggingEnabled(arguments.Visualising)
 
 	current_path := []data.Station{}

@@ -45,3 +45,14 @@ func SetLoggingEnabled(enabled bool) {
 type LinkedList struct {
 	NodeGrid []Station
 }
+
+//for ComboTrains, should be sorted by shortest path in turns first, and then max amount of paths first
+type GroupedPaths struct {
+	Paths [][]string
+	AmountOfPaths int
+	LongestPathInTurns int
+}
+
+type GroupsOfPaths struct {
+	Groups []GroupedPaths
+}
