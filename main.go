@@ -25,9 +25,12 @@ func main() {
 		arguments.PrintHelp()
 	}
 
-	current_path := []string{}
-	so_far_best_path := []string{}
 	found_routes := [][]string{}
+
+	current_path_DFS := []data.Station{}
+	so_far_best_path_DFS := []data.Station{}
+	found_routes_DFS := [][]data.Station{}
+
 	BFS_path := []string{}
 	first_path := []string{}
 	second_path := []string{}
@@ -50,27 +53,19 @@ func main() {
 	}
 
 	algorithm.MaxPaths(&found_routes, &first_path, &second_path)
-
-	//fmt.Println(so_far_best_path)
-	//fmt.Println(BFS_path)
 	data.SetLoggingEnabled(arguments.Visualising)
-
-	current_path := []data.Station{}
-	so_far_best_path := []data.Station{}
-	found_routes := [][]data.Station{}
 
 	// Do not look further than this amount of nodes
 	shortest := 10_000
 
-	algorithm.FindPathDFS(start_station, end_station, &current_path, &shortest, &so_far_best_path, &found_routes)
+	algorithm.FindPathDFS(start_station, end_station, &current_path_DFS, &shortest, &so_far_best_path_DFS, &found_routes_DFS)
 
-	BFS_path := []string{}
 	algorithm.BreadthFirstSearchStations(start_station, end_station, &BFS_path)
 
 	// RUN WEBSERVER
 	if arguments.Visualising {
 		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer cancel()
-		visualising.InitWeb(ctx, start_station, end_station, &so_far_best_path)
+		visualising.InitWeb(ctx, start_station, end_station, &so_far_best_path_DFS)
 	}
 }
