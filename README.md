@@ -28,7 +28,8 @@ go run . test_files/network_example.map waterloo st_pancras 4
 Argument flags: 
 
 -v for visualisation. The project can draw the grid to the browser and show how the algorithm works. 
--aid for Allow Invalid Data. The program tries to create the map with overlapping connections and stations. THIS CAN CAUSE UNEXPECTED BEHAVIOUR!!!
+
+-aid for Allow Invalid Data. The program tries to create the map even with overlapping connections and stations. THIS CAN CAUSE UNEXPECTED BEHAVIOUR!!!
 
 ### Input file format
 #### Stations (The nodes)
