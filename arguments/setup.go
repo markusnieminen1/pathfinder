@@ -3,5 +3,6 @@ package arguments
 const ()
 
 var (
-	Visualising bool
+	Visualising      bool
+	AllowInvalidData bool
 )

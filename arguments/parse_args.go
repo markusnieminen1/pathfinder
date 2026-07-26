@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"pathfinder/grid"
+	"path/filepath"
 	"strconv"
 )
 
@@ -15,7 +15,7 @@ func PrintHelp() {
 	fmt.Println("go run . [path to file containing network map] [start station] [end station] [number of trains]")
 	fmt.Println("")
 	fmt.Println("")
-	fmt.Println("Example: go run . network.map waterloo st_pancras 4")
+	fmt.Println("Example: go run . test_files/network_example.map waterloo st_pancras 4")
 	fmt.Println("")
 	fmt.Println("Flags for use: ")
 	flag.PrintDefaults()
@@ -26,6 +26,7 @@ func PrintHelp() {
 func ReadFlags() {
 
 	flag.BoolVar(&Visualising, "v", false, "Enable result visualisation")
+	flag.BoolVar(&AllowInvalidData, "aid", false, "Allow invalid data. The program tries to create the map with overlapping connections and stations. THIS CAN CAUSE UNEXPECTED BEHAVIOUR!!!")
 
 	if len(os.Args) > 4 {
 		flag.CommandLine.Parse(os.Args[5:])
@@ -55,7 +56,7 @@ func ReadArgs() (filename, start_station, end_station string, count int, err err
 	}
 
 	// Check the file is ok
-	filename, err = grid.GetAbsPath(os.Args[1])
+	filename, err = filepath.Abs(os.Args[1])
 
 	if err != nil {
 		return "", "", "", 0, errors.New("Invalid file path: " + os.Args[1])

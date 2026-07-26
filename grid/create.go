@@ -7,11 +7,13 @@ package grid
 
 import (
 	"errors"
+	"path/filepath"
+	"pathfinder/arguments"
 	"pathfinder/data"
 )
 
 func InitGrid(input_path string) error {
-	path, err := GetAbsPath(input_path)
+	path, err := filepath.Abs(input_path)
 
 	if err != nil {
 		return err
@@ -33,7 +35,7 @@ func InitGrid(input_path string) error {
 
 		valid, err := BuildStation(station_data)
 
-		if err != nil && ALLOW_CORRUPT_DATA {
+		if err != nil && arguments.AllowInvalidData {
 			continue
 
 		} else if err != nil {
@@ -42,7 +44,7 @@ func InitGrid(input_path string) error {
 
 		_, station_exists := data.StationsMap[valid.Name]
 
-		if station_exists && !ALLOW_CORRUPT_DATA {
+		if station_exists && !arguments.AllowInvalidData {
 			return errors.New("Duplicate station name: " + valid.Name)
 		}
 
@@ -54,7 +56,7 @@ func InitGrid(input_path string) error {
 
 		err := CreateConnection(connection)
 
-		if err != nil && ALLOW_CORRUPT_DATA {
+		if err != nil && arguments.AllowInvalidData {
 			continue
 
 		} else if err != nil {

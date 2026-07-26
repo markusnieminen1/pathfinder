@@ -3,21 +3,8 @@ package grid
 import (
 	"errors"
 	"os"
-	"path/filepath"
 	"strings"
 )
-
-func GetAbsPath(path string) (string, error) {
-
-	abs, err := filepath.Abs(path)
-
-	if err != nil {
-		return "", err
-	}
-
-	return abs, nil
-
-}
 
 // Check the file is not too large.
 func CheckFileSizeOK(abs_filepath string) (bool, error) {
