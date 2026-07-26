@@ -26,7 +26,7 @@ func PrintHelp() {
 func ReadFlags() {
 
 	flag.BoolVar(&Visualising, "v", false, "Enable result visualisation")
-	flag.BoolVar(&AllowInvalidData, "aid", false, "Allow invalid data. The program tries to create the map with overlapping connections and stations. THIS CAN CAUSE UNEXPECTED BEHAVIOUR!!!")
+	flag.BoolVar(&AllowInvalidData, "aid", false, "Allow invalid data. The program tries to create the map with overlapping connections and stations.\nTHIS CAN CAUSE UNEXPECTED BEHAVIOUR!!!")
 
 	if len(os.Args) > 4 {
 		flag.CommandLine.Parse(os.Args[5:])
