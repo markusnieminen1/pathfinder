@@ -1,0 +1,229 @@
+stations:
+
+# South Sector
+Old_Station, 10, 10
+Vale_Hub, 20, 10
+River_Plaza, 30, 10
+Lower_Wharf, 40, 10
+Crystal_Crossing, 50, 10
+Cobalt_Corner, 60, 10
+East_Station, 70, 10
+Upper_Gate, 80, 10
+River_Ridge, 90, 10
+Coral_Station, 100, 10
+Copper_Gate, 10, 20
+Crystal_Corner, 20, 20
+River_Park, 30, 20
+Cobalt_Yard, 40, 20
+North_Row, 50, 20
+Silver_Dock, 60, 20
+Foggy_Depot, 70, 20
+Vale_Plaza, 80, 20
+Stone_Row, 90, 20
+Maple_Square, 100, 20
+
+# South-Central Sector
+Upper_Bridge, 10, 30
+Lower_Point, 20, 30
+Elm_Court, 30, 30
+Hill_Heights, 40, 30
+East_Mills, 50, 30
+Rocky_Bend, 60, 30
+Old_Green, 70, 30
+Willow_Crossing, 80, 30
+Copper_Landing, 90, 30
+Frost_Way, 100, 30
+Birch_Field, 10, 40
+Iron_Dock, 20, 40
+Central_Junction, 30, 40
+River_Row, 40, 40
+Fern_Crossing, 50, 40
+River_Circle, 60, 40
+Lower_Bridge, 70, 40
+Vale_Park, 80, 40
+Birch_Terminal, 90, 40
+Birch_Point, 100, 40
+
+# Central Sector
+Stone_Wharf, 10, 50
+Vale_Dock, 20, 50
+Central_Court, 30, 50
+Silver_Bend, 40, 50
+Lake_Terminal, 50, 50
+Rocky_Bridge, 60, 50
+Vale_Green, 70, 50
+Copper_Hub, 80, 50
+Pine_Loop, 90, 50
+West_Hub, 100, 50
+East_Heights, 10, 60
+Pine_Bridge, 20, 60
+Vale_Crossing, 30, 60
+Stone_Green, 40, 60
+Marble_Way, 50, 60
+Pine_Gate, 60, 60
+Green_Bridge, 70, 60
+Rocky_Plaza, 80, 60
+Hill_Plaza, 90, 60
+Lake_Mills, 100, 60
+
+# North-Central Sector
+Copper_Bend, 10, 70
+Hill_Mills, 20, 70
+Cobalt_Bridge, 30, 70
+Birch_Hub, 40, 70
+New_Ridge, 50, 70
+Green_Crossing, 60, 70
+West_Circle, 70, 70
+Old_Plaza, 80, 70
+Silver_Heights, 90, 70
+Foggy_Court, 100, 70
+Central_Bridge, 10, 80
+Willow_Court, 20, 80
+Rocky_Ridge, 30, 80
+Hill_Bend, 40, 80
+North_Wharf, 50, 80
+Old_Wharf, 60, 80
+Crystal_Row, 70, 80
+Vale_Row, 80, 80
+Fern_Corner, 90, 80
+Silver_Park, 100, 80
+
+# North Sector
+North_Mills, 10, 90
+Hill_Ridge, 20, 90
+Golden_Ridge, 30, 90
+Lower_Circle, 40, 90
+Cedar_Loop, 50, 90
+Blue_Court, 60, 90
+Iron_Plaza, 70, 90
+Birch_Row, 80, 90
+Amber_Green, 90, 90
+North_Court, 100, 90
+Pine_Grove, 10, 100
+South_Square, 20, 100
+Birch_Way, 30, 100
+Cedar_Hub, 40, 100
+Marble_Crossing, 50, 100
+Upper_Mills, 60, 100
+Green_Loop, 70, 100
+Central_Row, 80, 100
+New_Plaza, 90, 100
+Sandy_Bend, 100, 100
+
+
+connections:
+
+# South Sector
+Old_Station - Vale_Hub
+Old_Station - Copper_Gate
+Vale_Hub - River_Plaza
+Lower_Wharf - Cobalt_Yard
+Crystal_Crossing - Cobalt_Corner
+Cobalt_Corner - Silver_Dock
+East_Station - Upper_Gate
+Upper_Gate - Vale_Plaza
+River_Ridge - Coral_Station
+Coral_Station - Maple_Square
+Copper_Gate - Upper_Bridge
+Crystal_Corner - Lower_Point
+River_Park - Cobalt_Yard
+River_Park - Elm_Court
+Cobalt_Yard - Hill_Heights
+North_Row - Silver_Dock
+Foggy_Depot - Vale_Plaza
+Foggy_Depot - Old_Green
+Vale_Plaza - Willow_Crossing
+Stone_Row - Maple_Square
+
+# South-Central Sector
+Upper_Bridge - Lower_Point
+Upper_Bridge - Birch_Field
+Lower_Point - Iron_Dock
+Elm_Court - Central_Junction
+Hill_Heights - River_Row
+East_Mills - Rocky_Bend
+Old_Green - Lower_Bridge
+Copper_Landing - Frost_Way
+Copper_Landing - Birch_Terminal
+Frost_Way - Birch_Point
+Birch_Field - Stone_Wharf
+Iron_Dock - Central_Junction
+Iron_Dock - Vale_Dock
+Fern_Crossing - River_Circle
+Fern_Crossing - Lake_Terminal
+River_Circle - Rocky_Bridge
+Lower_Bridge - Vale_Green
+Vale_Park - Birch_Terminal
+Vale_Park - Copper_Hub
+Birch_Point - West_Hub
+
+# Central Sector
+Stone_Wharf - East_Heights
+Vale_Dock - Central_Court
+Vale_Dock - Pine_Bridge
+Central_Court - Silver_Bend
+Lake_Terminal - Marble_Way
+Rocky_Bridge - Pine_Gate
+Vale_Green - Copper_Hub
+Vale_Green - Green_Bridge
+Copper_Hub - Pine_Loop
+West_Hub - Lake_Mills
+East_Heights - Pine_Bridge
+Vale_Crossing - Stone_Green
+Stone_Green - Marble_Way
+Marble_Way - Pine_Gate
+Pine_Gate - Green_Bridge
+Green_Bridge - Rocky_Plaza
+Rocky_Plaza - Old_Plaza
+Hill_Plaza - Lake_Mills
+
+# North-Central Sector
+Copper_Bend - Central_Bridge
+Hill_Mills - Cobalt_Bridge
+Birch_Hub - Hill_Bend
+New_Ridge - North_Wharf
+Green_Crossing - Old_Wharf
+West_Circle - Old_Plaza
+Old_Plaza - Vale_Row
+Silver_Heights - Foggy_Court
+Silver_Heights - Fern_Corner
+Foggy_Court - Silver_Park
+Willow_Court - Rocky_Ridge
+Rocky_Ridge - Hill_Bend
+Rocky_Ridge - Golden_Ridge
+Old_Wharf - Crystal_Row
+Crystal_Row - Vale_Row
+Crystal_Row - Iron_Plaza
+Fern_Corner - Amber_Green
+Silver_Park - North_Court
+
+# North Sector
+North_Mills - Hill_Ridge
+North_Mills - Pine_Grove
+Hill_Ridge - Golden_Ridge
+Lower_Circle - Cedar_Loop
+Lower_Circle - Cedar_Hub
+Cedar_Loop - Blue_Court
+Cedar_Loop - Marble_Crossing
+Blue_Court - Iron_Plaza
+Blue_Court - Upper_Mills
+Iron_Plaza - Green_Loop
+Birch_Row - Amber_Green
+Pine_Grove - South_Square
+South_Square - Birch_Way
+Cedar_Hub - Marble_Crossing
+Marble_Crossing - Upper_Mills
+Green_Loop - Central_Row
+New_Plaza - Sandy_Bend
+North_Row-Cobalt_Yard
+Silver_Bend-Stone_Green
+Vale_Row-Fern_Corner
+New_Ridge-Green_Crossing
+Hill_Bend-North_Wharf
+Willow_Court-Central_Bridge
+Copper_Bend-Hill_Mills
+Maple_Square-Frost_Way
+Sandy_Bend-North_Court
+Lake_Mills-Foggy_Court
+Lower_Wharf-River_Plaza
+Silver_Dock-Rocky_Bend
