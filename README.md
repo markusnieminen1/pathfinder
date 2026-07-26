@@ -56,9 +56,10 @@ victoria - waterloo
 ...
 
 
-3. Everything after \# is a comment and the computer ignores it! Whitespaces are ignored. Stations or Connections can only be written on the same line! 
+#### General 
+Everything after \# is a comment and the computer ignores it! Whitespaces are ignored. Stations or Connections can only be written on the same line! 
 
-The example file has "Stations:" and "Connections:" prefixes for sections for the file, but the program does not need those in order to work. Lines and connections can be mixed, so the order does not matter. 
+The example file has "Stations:" and "Connections:" prefixes for sections for the file. The program does not need prefixes in order to work. Lines and connections can also be mixed.
 
 ## What we learned
 
