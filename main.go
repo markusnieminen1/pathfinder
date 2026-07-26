@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -18,8 +19,10 @@ func main() {
 	abs_filepath, start_station_name, end_station_name, _, err := arguments.ReadArgs()
 
 	if err != nil {
-		log.Println("Invalid arguments. " + err.Error())
-		log.Fatalln(arguments.GetHelp())
+		// fmt.Println("Invalid arguments. " + err.Error())
+		fmt.Print("ERROR: ")
+		fmt.Println(err.Error())
+		arguments.PrintHelp()
 	}
 
 	err = grid.InitGrid(abs_filepath)
@@ -40,6 +43,8 @@ func main() {
 		log.Fatalln("End station does not exist in the map! ('" + end_station_name + "')")
 	}
 
+	data.SetLoggingEnabled(arguments.Visualising)
+
 	current_path := []data.Station{}
 	so_far_best_path := []data.Station{}
 	found_routes := [][]data.Station{}
@@ -52,14 +57,10 @@ func main() {
 	BFS_path := []string{}
 	algorithm.BreadthFirstSearchStations(start_station, end_station, &BFS_path)
 
-	/*
-		fmt.Println(so_far_best_path)
-		fmt.Println(BFS_path)
-	*/
-
 	// RUN WEBSERVER
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer cancel()
-	visualising.InitWeb(ctx, start_station, end_station, &so_far_best_path)
-
+	if arguments.Visualising {
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer cancel()
+		visualising.InitWeb(ctx, start_station, end_station, &so_far_best_path)
+	}
 }

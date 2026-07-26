@@ -2,16 +2,34 @@ package arguments
 
 import (
 	"errors"
+	"flag"
+	"fmt"
 	"os"
 	"pathfinder/grid"
 	"strconv"
 )
 
-func GetHelp() string {
+func PrintHelp() {
+	fmt.Println("")
+	fmt.Println("USAGE:")
+	fmt.Println("go run . [path to file containing network map] [start station] [end station] [number of trains]")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("Example: go run . network.map waterloo st_pancras 4")
+	fmt.Println("")
+	fmt.Println("Flags for use: ")
+	flag.PrintDefaults()
 
-	return ("USAGE: \n" +
-		"go run . [path to file containing network map] [start station] [end station] [number of trains] \n" +
-		"Example: go run . network.map waterloo st_pancras 4")
+	os.Exit(0)
+}
+
+func ReadFlags() {
+
+	flag.BoolVar(&Visualising, "v", false, "Enable result visualisation")
+
+	if len(os.Args) > 4 {
+		flag.CommandLine.Parse(os.Args[5:])
+	}
 }
 
 func ReadArgs() (filename, start_station, end_station string, count int, err error) {
@@ -25,6 +43,13 @@ func ReadArgs() (filename, start_station, end_station string, count int, err err
 
 	// flags starting from index 5
 
+	ReadFlags()
+
+	if len(os.Args) > 1 && os.Args[1] == "-h" {
+		PrintHelp()
+
+	}
+
 	if len(os.Args) < 5 {
 		return "", "", "", 0, errors.New("Missing arguments.")
 	}
@@ -33,13 +58,13 @@ func ReadArgs() (filename, start_station, end_station string, count int, err err
 	filename, err = grid.GetAbsPath(os.Args[1])
 
 	if err != nil {
-		return "", "", "", 0, errors.Join(err, errors.New("Invalid file: "+os.Args[1]))
+		return "", "", "", 0, errors.New("Invalid file path: " + os.Args[1])
 	}
 
 	f, err := os.Open(filename)
 
 	if err != nil {
-		return "", "", "", 0, errors.Join(err, errors.New("Cannot open input file: "+os.Args[1]))
+		return "", "", "", 0, errors.New("Cannot open input file: " + filename + ". The file does not exist in given location or the permissions are not ok for reading the file.")
 	}
 	f.Close()
 

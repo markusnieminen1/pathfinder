@@ -2,6 +2,7 @@ package visualising
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"pathfinder/data"
@@ -25,6 +26,7 @@ func InitWeb(ctx context.Context, start, end *data.Station, fastest_route *[]dat
 		server.Shutdown(shutdownCtx)
 	}()
 
+	fmt.Println("Visualisation visibile at: http://localhost:8080 \nUse ^C to shutdown.")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
