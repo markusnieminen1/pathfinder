@@ -10,25 +10,18 @@ import (
 )
 
 func PrintHelp() {
-	fmt.Println("")
-	fmt.Println("USAGE:")
+	fmt.Println("\nUSAGE:")
 	fmt.Println("go run . [path to file containing network map] [start station] [end station] [number of trains]")
-	fmt.Println("")
-	fmt.Println("")
-	fmt.Println("Example: go run . test_files/network_example.map waterloo st_pancras 4")
-	fmt.Println("")
-	fmt.Println("Flags for use: ")
+	fmt.Println("\nExample: go run . test_files/network_example.map waterloo st_pancras 4\n")
 	flag.PrintDefaults()
-
 	os.Exit(0)
 }
 
 func ReadFlags() {
-
 	flag.BoolVar(&Visualising, "v", false, "Enable result visualisation")
-	flag.BoolVar(&AllowInvalidData, "aid", false, "Allow invalid data. The program tries to create the map with overlapping connections and stations.\nTHIS CAN CAUSE UNEXPECTED BEHAVIOUR!!!")
+	flag.BoolVar(&AllowInvalidData, "aid", false, "Allow invalid data")
 
-	if len(os.Args) > 4 {
+	if len(os.Args) > 5 {
 		flag.CommandLine.Parse(os.Args[5:])
 	}
 }
