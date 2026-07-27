@@ -9,6 +9,11 @@ type Station struct {
 	ID          int
 }
 
+type BfsQue struct {
+	Station *Station
+	Path    []*Station
+}
+
 var StationsMap map[string]*Station = map[string]*Station{} // Saves pointer to a Station by Station name
 var CoordsMap map[[2]int]*Station = map[[2]int]*Station{}   // Saves pointer to a Station by Coordinates
 var MAX_X_COORDINATE, MAX_Y_COORDINATE, MIN_X_COORDINATE, MIN_Y_COORDINATE int
@@ -46,10 +51,10 @@ type LinkedList struct {
 	NodeGrid []Station
 }
 
-//for ComboTrains, should be sorted by shortest path in turns first, and then max amount of paths first
+// for ComboTrains, should be sorted by shortest path in turns first, and then max amount of paths first
 type GroupedPaths struct {
-	Paths [][]string
-	AmountOfPaths int
+	Paths              [][]string
+	AmountOfPaths      int
 	LongestPathInTurns int
 }
 

@@ -116,7 +116,6 @@ func FindPathCombo(MaximumPaths int, found_routes *[][]string, TopGroup *data.Gr
 	//counter := 1
 
 	fmt.Println("returning THIS SHOULD HAPPEN IF THERE ARE MAX PATHS or LESS THAN MAX DUE TO ONLY OVERLAPPING PATHS, OverlapBool = ", OverlapBool)
-	return
 
 }
 

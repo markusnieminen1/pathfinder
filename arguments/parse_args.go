@@ -20,6 +20,7 @@ func PrintHelp() {
 func ReadFlags() {
 	flag.BoolVar(&Visualising, "v", false, "Enable result visualisation")
 	flag.BoolVar(&AllowInvalidData, "aid", false, "Allow invalid data")
+	flag.BoolVar(&UseDFS, "dfs", false, "Use DFS instead of BFS")
 
 	if len(os.Args) > 5 {
 		flag.CommandLine.Parse(os.Args[5:])
