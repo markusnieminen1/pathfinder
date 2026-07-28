@@ -55,12 +55,15 @@ func main() {
 	data.SetLoggingEnabled(arguments.Visualising)
 
 	// Search for path:
-	current_path_DFS := []data.Station{}
-	so_far_best_path_DFS := []data.Station{}
-	found_routes_DFS := [][]data.Station{}
-	shortest := 10_000
 
-	algorithm.FindPathDFS(start_station, end_station, &current_path_DFS, &shortest, &so_far_best_path_DFS, &found_routes_DFS)
+	/*
+		current_path_DFS := []data.Station{}
+		so_far_best_path_DFS := []data.Station{}
+		found_routes := [][]data.Station{}
+		shortest := 10_000
+		algorithm.FindPathDFS(start_station, end_station, &current_path_DFS, &shortest, &so_far_best_path_DFS, &found_routes)
+		found_routes = algorithm.FindPathBFS(start_station, end_station, search_times_after_first_found, possible_paths)
+	*/
 
 	Paths := algorithm.FindPathBFS(start_station, end_station, search_times_after_first_found, possible_paths)
 
@@ -75,17 +78,27 @@ func main() {
 			}
 			pathSet = append(pathSet, singlePath)
 		}
+	} else {
+		fmt.Fprintln(os.Stderr, "Error: No paths found.")
+		os.Exit(1)
 	}
 	// Run turn-by-turn scheduler
 	if len(pathSet) > 0 && train_count > 0 {
 		algorithm.RunScheduler(pathSet, train_count)
 	}
 
-	fmt.Println(len(Paths))
-
 	if arguments.Visualising {
 		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer cancel()
-		visualising.InitWeb(ctx, start_station, end_station, &so_far_best_path_DFS)
+
+		var fastest_path []data.Station
+
+		for _, stPtr := range Paths[0] {
+			if stPtr != nil {
+				fastest_path = append(fastest_path, *stPtr)
+			}
+		}
+
+		visualising.InitWeb(ctx, start_station, end_station, fastest_path)
 	}
 }
