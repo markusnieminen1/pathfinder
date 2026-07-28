@@ -37,15 +37,27 @@
 }
 
     async function run() {
-        const events = await fetchBatch();
-        for (const event of events) {
-            applyEvent(event);
-            await sleep(5);
+    let events = [];
+
+    try {
+        events = await fetchBatch();
+        
+        if (!Array.isArray(events)) {
+            events = [];
         }
 
-        await showResult();
-
+    } catch (fetchError) {
+        console.error("Haku epäonnistui, siirrytään suoraan lopputulokseen:", fetchError);
     }
+
+    for (const event of events) {
+        applyEvent(event);
+        await sleep(5);
+    }
+
+    await showResult();
+}
+
 
     run();
 
