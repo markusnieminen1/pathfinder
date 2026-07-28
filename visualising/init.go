@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-func InitWeb(ctx context.Context, start, end *data.Station, fastest_route *[]data.Station) {
+func InitWeb(ctx context.Context, start, end *data.Station, fast_path []data.Station) {
 
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: nil,
 	}
 
-	http.HandleFunc("GET /", Roothandler(start, end, fastest_route))
+	http.HandleFunc("GET /", Roothandler(start, end, &fast_path))
 	http.HandleFunc("GET /events", EventsHandler)
 
 	go func() {

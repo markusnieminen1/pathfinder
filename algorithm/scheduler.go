@@ -74,7 +74,7 @@ func RunScheduler(pathSet [][]string, totalTrains int) {
 		for _, t := range activeTrains {
 			t.StepIndex++
 			if t.StepIndex < len(t.Path) {
-				turnMoves = append(turnMoves, fmt.Sprintf("L%d-%s", t.ID, t.Path[t.StepIndex]))
+				turnMoves = append(turnMoves, fmt.Sprintf("T%d-%s", t.ID, t.Path[t.StepIndex]))
 				if t.StepIndex < len(t.Path)-1 {
 					remainingActive = append(remainingActive, t)
 				}
@@ -101,7 +101,7 @@ func RunScheduler(pathSet [][]string, totalTrains int) {
 					Path:      assign.Path,
 					StepIndex: 1, // Advance to first station after start
 				}
-				turnMoves = append(turnMoves, fmt.Sprintf("L%d-%s", t.ID, t.Path[1]))
+				turnMoves = append(turnMoves, fmt.Sprintf("T%d-%s", t.ID, t.Path[1]))
 				if len(t.Path) > 2 {
 					activeTrains = append(activeTrains, t)
 				}
