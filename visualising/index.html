@@ -4,102 +4,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graph</title>
+    <title>Station Pathfinder Visualizer</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 
+<body>
+
+<div id="hud">
+    <div class="turn-counter">
+        Turn <span id="currentTurn">0</span> / <span id="totalTurns">0</span>
+    </div>
+    <div id="statusBadge" class="status-badge">Paused</div>
+</div>
+
+<div id="controls-hint">
+    <kbd>←</kbd> <kbd>→</kbd> Step Turn &nbsp;|&nbsp; <kbd>Space</kbd> Play / Pause &nbsp;|&nbsp; <kbd>R</kbd> Reset
+</div>
+
+<svg viewBox="{{.ViewBox}}">
+    <!-- Station Edge Connections -->
+    {{range .Graph}}
+    {{$station := .}}
+    {{range .Connections}}
+    <line x1="{{index $station.Coordinates 0}}" y1="{{index $station.Coordinates 1}}"
+          x2="{{index .Coordinates 0}}" y2="{{index .Coordinates 1}}" class="grid-line" />
+    {{end}}
+    {{end}}
+
+    <!-- Highlight Path Lines -->
+    {{$PreviousX := index .Start.Coordinates 0}}
+    {{$PreviousY := index .Start.Coordinates 1}}
+    {{if .Fastest_route_ids}}
+    {{range .Fastest_route_ids}}
+    <line x1="{{index .Coordinates 0}}" y1="{{index .Coordinates 1}}" x2="{{$PreviousX}}" y2="{{$PreviousY}}" class="fastest-route-line" />
+    {{$PreviousX = index .Coordinates 0}}
+    {{$PreviousY = index .Coordinates 1}}
+    {{end}}
+    {{end}}
+
+    <!-- Base Station Nodes & Names -->
+    {{range .Graph}}
+    <circle cx="{{index .Coordinates 0}}" cy="{{index .Coordinates 1}}" r="0.3" class="station-node" id="node-{{.Name}}" />
+    <text x="{{index .Coordinates 0}}" y="{{index .Coordinates 1}}" dx="0.5" dy="0.2" class="station-text">{{.Name}}</text>
+    {{end}}
+
+    <!-- Start Station -->
+    <circle cx="{{index .Start.Coordinates 0}}" cy="{{index .Start.Coordinates 1}}" r="1.0" class="start-node" />
+
+    <!-- End Station -->
+    <circle cx="{{index .End.Coordinates 0}}" cy="{{index .End.Coordinates 1}}" r="1.0" class="end-node" />
+
+    <!-- Dynamic Active Train Layer -->
+    <g id="trainsLayer"></g>
+</svg>
+
 <script>
+    const turnsData = {{.TurnsJSON}} || [];
+    const stationsMap = {{.StationsJSON}} || {};
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    let currentTurnIdx = 0;
+    let isPlaying = false;
+    let playTimer = null;
+
+    const currentTurnElem = document.getElementById("currentTurn");
+    const totalTurnsElem = document.getElementById("totalTurns");
+    const statusBadge = document.getElementById("statusBadge");
+    const trainsLayer = document.getElementById("trainsLayer");
+
+    totalTurnsElem.innerText = turnsData.length;
+
+    function updateHUD() {
+        currentTurnElem.innerText = currentTurnIdx;
+        if (isPlaying) {
+            statusBadge.innerText = "Playing";
+            statusBadge.classList.add("playing");
+        } else {
+            statusBadge.innerText = "Paused";
+            statusBadge.classList.remove("playing");
+        }
     }
 
-    function applyEvent(e) {
-        const circle = document.getElementById(e.i);
-        // Change the dots 
-        if (circle) circle.setAttribute('fill', e.v ? 'Red' : 'MediumPurple');
-    }
+    function renderTurn(turnIndex) {
+        trainsLayer.innerHTML = "";
 
-    async function fetchBatch() {
-        const res = await fetch(`/events`);
-
-        if (!res.ok) throw new Error(`Failed to get events: ${res.status}`);
-
-        return res.json();
-    }
-
-    async function showResult() {
-    const path_lines = document.querySelectorAll(".fastest_route");
-
-    for (const element of path_lines) {
-        element.setAttribute('display', 'block');
-        await sleep(65);
-    }
-}
-
-    async function run() {
-    let events = [];
-
-    try {
-        events = await fetchBatch();
-        
-        if (!Array.isArray(events)) {
-            events = [];
+        if (turnIndex <= 0 || turnIndex > turnsData.length) {
+            updateHUD();
+            return;
         }
 
-    } catch (fetchError) {
-        console.error("Haku epäonnistui, siirrytään suoraan lopputulokseen:", fetchError);
+        const turnMoves = turnsData[turnIndex - 1];
+
+        turnMoves.forEach(move => {
+            const parts = move.split("-");
+            if (parts.length < 2) return;
+
+            const trainID = parts[0];
+            const stationName = parts[1];
+            const coords = stationsMap[stationName];
+
+            if (!coords) return;
+
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.setAttribute("class", "train-marker");
+
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", coords[0]);
+            circle.setAttribute("cy", coords[1]);
+            circle.setAttribute("r", "1.1");
+
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", coords[0]);
+            text.setAttribute("y", coords[1]);
+            text.textContent = trainID;
+
+            g.appendChild(circle);
+            g.appendChild(text);
+            trainsLayer.appendChild(g);
+        });
+
+        updateHUD();
     }
 
-    for (const event of events) {
-        applyEvent(event);
-        await sleep(5);
+    function nextTurn() {
+        if (currentTurnIdx < turnsData.length) {
+            currentTurnIdx++;
+            renderTurn(currentTurnIdx);
+        } else if (isPlaying) {
+            togglePlay();
+        }
     }
 
-    await showResult();
-}
+    function prevTurn() {
+        if (currentTurnIdx > 0) {
+            currentTurnIdx--;
+            renderTurn(currentTurnIdx);
+        }
+    }
 
+    function resetTurns() {
+        if (isPlaying) togglePlay();
+        currentTurnIdx = 0;
+        renderTurn(currentTurnIdx);
+    }
 
-    run();
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+            if (currentTurnIdx >= turnsData.length) currentTurnIdx = 0;
+            playTimer = setInterval(nextTurn, 800);
+        } else {
+            clearInterval(playTimer);
+        }
+        updateHUD();
+    }
 
+    // Keyboard Controls Handler
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+            if (isPlaying) togglePlay();
+            nextTurn();
+        } else if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+            if (isPlaying) togglePlay();
+            prevTurn();
+        } else if (e.code === "Space") {
+            e.preventDefault();
+            togglePlay();
+        } else if (e.key === "r" || e.key === "R") {
+            resetTurns();
+        }
+    });
+
+    renderTurn(0);
 </script>
-
-<body>
-    <svg viewBox="{{.ViewBox}}" style="width: 100vw; height: 100vh;">
-        {{range .Graph}}
-        {{$station := .}}
-        <!--Draws connections -->
-        {{range .Connections}}
-        <line x1="{{index $station.Coordinates 0}}" y1="{{index $station.Coordinates 1}}" x2="{{index .Coordinates 0}}"
-            y2="{{index .Coordinates 1}}" stroke="black" stroke-width="0.2" />
-        {{end}}
-        {{end}}
-
-        <!--Draws fastest route lines, the lines are hidden and only drawn if data is provided.  -->
-        <!--Javascript above doesn't crash if there is no items with class "fastest_route". -->
-        {{$PreviousX := index .Start.Coordinates 0}}
-        {{$PreviousY := index .Start.Coordinates 1}}
-
-        {{if .Fastest_route_ids}}
-            {{range .Fastest_route_ids}}
-            <line x1="{{index .Coordinates 0}}" y1="{{index .Coordinates 1}}" x2="{{$PreviousX}}" y2="{{$PreviousY}}"
-                stroke="LightSeaGreen" stroke-width="0.4" display="none" class="fastest_route" />
-            {{$PreviousX = index .Coordinates 0}}
-            {{$PreviousY = index .Coordinates 1}}
-            {{end}}
-        {{end}}
-
-        <!--Draws stations -->
-        {{range .Graph}}
-        <circle cx="{{index .Coordinates 0}}" cy="{{index .Coordinates 1}}" r="0.2" fill="Lavender" id="{{.ID}}" />
-        <text x="{{index .Coordinates 0}}" y="{{index .Coordinates 1}}" font-size="0.3">{{.Name}}</text>
-        {{end}}
-
-        <circle cx="{{index .Start.Coordinates 0}}" cy="{{index .Start.Coordinates 1}}" r="0.5" fill="DarkOrange" />
-        <text x="{{index .Start.Coordinates 0}}" y="{{index .Start.Coordinates 1}} "font-size="0.3">{{.Start.Name}}</text>
-
-        <circle cx="{{index .End.Coordinates 0}}" cy="{{index .End.Coordinates 1}}" r="0.3" fill="DarkOrange" />
-        <text x="{{index .End.Coordinates 0}}" y="{{index .End.Coordinates 1}}" font-size="0.3">{{.End.Name}}</text>
-    </svg>
 </body>
 
 </html>

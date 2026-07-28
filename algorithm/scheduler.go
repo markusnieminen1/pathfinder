@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-// PathAssignment maps a train ID to its assigned station path
+// PathAssignment links a train ID directly to its assigned path index and route.
 type PathAssignment struct {
-	TrainID int
-	Path    []string
+	TrainID   int
+	PathIndex int
+	Path      []string
 }
 
-// DistributeTrains assigns each of the N trains to the optimal path in pathSet.
-// Paths in pathSet should be vertex-disjoint (except for start and end).
+// DistributeTrains assigns totalTrains to paths in pathSet to minimize total turns.
 func DistributeTrains(pathSet [][]string, totalTrains int) []PathAssignment {
 	pathCounts := make([]int, len(pathSet))
 	assignments := make([]PathAssignment, totalTrains)
@@ -31,27 +31,30 @@ func DistributeTrains(pathSet [][]string, totalTrains int) []PathAssignment {
 
 		pathCounts[bestPathIdx]++
 		assignments[trainID-1] = PathAssignment{
-			TrainID: trainID,
-			Path:    pathSet[bestPathIdx],
+			TrainID:   trainID,
+			PathIndex: bestPathIdx,
+			Path:      pathSet[bestPathIdx],
 		}
 	}
 
 	return assignments
 }
 
-// RunScheduler simulates train movements turn-by-turn and outputs "L1-station L2-station" per line.
-func RunScheduler(pathSet [][]string, totalTrains int) {
+// ActiveTrain tracks a train traversing its assigned path.
+type ActiveTrain struct {
+	ID        int
+	Path      []string
+	StepIndex int
+}
+
+// RunScheduler simulates turn-by-turn movements.
+// Enforces that no intermediate station is occupied by >1 train at any turn.
+func RunScheduler(pathSet [][]string, totalTrains int) [][]string {
 	if len(pathSet) == 0 || totalTrains <= 0 {
-		return
+		return nil
 	}
 
 	assignments := DistributeTrains(pathSet, totalTrains)
-
-	type ActiveTrain struct {
-		ID        int
-		Path      []string
-		StepIndex int
-	}
 
 	var activeTrains []*ActiveTrain
 	trainPointer := 0
@@ -59,22 +62,32 @@ func RunScheduler(pathSet [][]string, totalTrains int) {
 	// Track next available turn when a path can accept a new train
 	pathNextAvailableTurn := make([]int, len(pathSet))
 
-	// Map path start->end identifier to index
-	pathIndexMap := make(map[string]int)
-	for idx, p := range pathSet {
-		key := p[0] + "->" + p[len(p)-1] + fmt.Sprintf("-%d", idx)
-		pathIndexMap[key] = idx
-	}
+	var turnHistory [][]string
+	startStation := pathSet[0][0]
+	endStation := pathSet[0][len(pathSet[0])-1]
 
 	for turn := 1; ; turn++ {
 		var turnMoves []string
+		// Tracks station occupancy for the current turn (StationName -> TrainID)
+		stationOccupancy := make(map[string]int)
 
 		// 1. Advance active trains forward
 		var remainingActive []*ActiveTrain
 		for _, t := range activeTrains {
 			t.StepIndex++
 			if t.StepIndex < len(t.Path) {
-				turnMoves = append(turnMoves, fmt.Sprintf("T%d-%s", t.ID, t.Path[t.StepIndex]))
+				stationName := t.Path[t.StepIndex]
+
+				// Enforce strict single occupancy for intermediate stations
+				if stationName != startStation && stationName != endStation {
+					if occupyingTrain, occupied := stationOccupancy[stationName]; occupied {
+						panic(fmt.Sprintf("Occupancy Violation at Turn %d: Station '%s' occupied by T%d and T%d", turn, stationName, occupyingTrain, t.ID))
+					}
+					stationOccupancy[stationName] = t.ID
+				}
+
+				turnMoves = append(turnMoves, fmt.Sprintf("T%d-%s", t.ID, stationName))
+
 				if t.StepIndex < len(t.Path)-1 {
 					remainingActive = append(remainingActive, t)
 				}
@@ -82,26 +95,29 @@ func RunScheduler(pathSet [][]string, totalTrains int) {
 		}
 		activeTrains = remainingActive
 
-		// 2. Dispatch waiting trains if path is available this turn
+		// 2. Dispatch waiting trains onto paths
 		for trainPointer < len(assignments) {
 			assign := assignments[trainPointer]
-
-			// Find matching path index
-			pIdx := 0
-			for i, p := range pathSet {
-				if len(p) == len(assign.Path) && p[0] == assign.Path[0] && p[len(p)-1] == assign.Path[len(assign.Path)-1] {
-					pIdx = i
-					break
-				}
-			}
+			pIdx := assign.PathIndex
 
 			if pathNextAvailableTurn[pIdx] <= turn {
+				firstStation := assign.Path[1]
+
+				// Check station occupancy before dispatching
+				if firstStation != startStation && firstStation != endStation {
+					if _, occupied := stationOccupancy[firstStation]; occupied {
+						break // Station blocked this turn; wait for next turn
+					}
+					stationOccupancy[firstStation] = assign.TrainID
+				}
+
 				t := &ActiveTrain{
 					ID:        assign.TrainID,
 					Path:      assign.Path,
-					StepIndex: 1, // Advance to first station after start
+					StepIndex: 1,
 				}
-				turnMoves = append(turnMoves, fmt.Sprintf("T%d-%s", t.ID, t.Path[1]))
+				turnMoves = append(turnMoves, fmt.Sprintf("T%d-%s", t.ID, firstStation))
+
 				if len(t.Path) > 2 {
 					activeTrains = append(activeTrains, t)
 				}
@@ -112,13 +128,17 @@ func RunScheduler(pathSet [][]string, totalTrains int) {
 			}
 		}
 
-		// Termination condition
+		// Termination check
 		if len(turnMoves) == 0 && trainPointer >= len(assignments) && len(activeTrains) == 0 {
 			break
 		}
 
 		if len(turnMoves) > 0 {
-			fmt.Println(strings.Join(turnMoves, " "))
+			line := strings.Join(turnMoves, " ")
+			fmt.Println(line)
+			turnHistory = append(turnHistory, turnMoves)
 		}
 	}
+
+	return turnHistory
 }

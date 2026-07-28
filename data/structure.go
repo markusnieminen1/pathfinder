@@ -24,6 +24,7 @@ type VisualisingData struct {
 	Start             *Station
 	End               *Station
 	Fastest_route_ids *[]Station
+	Turns             [][]string
 }
 
 type SearchEvent struct {
