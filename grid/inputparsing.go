@@ -39,8 +39,19 @@ func TrimLines(s_slice []string) []string {
 
 // Simple logic for extracting the stations and connections from trimmed list.
 func ExtractStationsConnections(s_slice []string) (stations, connections []string, err error) {
+	hasStationsHeader := false
+	hasConnectionsHeader := false
 
 	for _, line := range s_slice {
+		if strings.EqualFold(line, "stations:") {
+			hasStationsHeader = true
+			continue
+		}
+		if strings.EqualFold(line, "connections:") {
+			hasConnectionsHeader = true
+			continue
+		}
+
 		if strings.Count(line, ",") == 2 {
 			stations = append(stations, line)
 			continue
@@ -49,6 +60,14 @@ func ExtractStationsConnections(s_slice []string) (stations, connections []strin
 			connections = append(connections, line)
 			continue
 		}
+	}
+
+	if !hasStationsHeader {
+		return nil, nil, errors.New("Missing 'stations:' section header")
+	}
+
+	if !hasConnectionsHeader {
+		return nil, nil, errors.New("Missing 'connections:' section header")
 	}
 
 	if len(stations) < 2 || len(connections) < 2 {
@@ -72,9 +91,8 @@ func GetStationItems(s string) (string, [2]int, error) {
 	}
 
 	coord1, err := strconv.Atoi(splitted[1])
-
-	if err != nil {
-		return "", [2]int{}, errors.Join(err, errors.New("Cannot parse X coordinate (index 1)"+s))
+	if err != nil || coord1 < 0 {
+		return "", [2]int{}, errors.Join(err, errors.New("Cannot parse or invalid X coordinate: "+s))
 	}
 
 	if data.MAX_X_COORDINATE < coord1 {
@@ -84,9 +102,8 @@ func GetStationItems(s string) (string, [2]int, error) {
 	}
 
 	coord2, err := strconv.Atoi(splitted[2])
-
-	if err != nil {
-		return "", [2]int{}, errors.Join(err, errors.New("Cannot parse X coordinate (index 2)"+s))
+	if err != nil || coord2 < 0 {
+		return "", [2]int{}, errors.Join(err, errors.New("Cannot parse or invalid Y coordinate: "+s))
 	}
 
 	if data.MAX_Y_COORDINATE < coord2 {

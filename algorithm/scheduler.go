@@ -19,10 +19,11 @@ func DistributeTrains(pathSet [][]string, totalTrains int) []PathAssignment {
 
 	for trainID := 1; trainID <= totalTrains; trainID++ {
 		bestPathIdx := 0
-		minCost := len(pathSet[0]) + pathCounts[0]
+
+		minCost := (len(pathSet[0]) - 1) + pathCounts[0]
 
 		for i := 1; i < len(pathSet); i++ {
-			cost := len(pathSet[i]) + pathCounts[i]
+			cost := (len(pathSet[i]) - 1) + pathCounts[i]
 			if cost < minCost {
 				minCost = cost
 				bestPathIdx = i
@@ -56,7 +57,10 @@ func RunScheduler(pathSet [][]string, totalTrains int) [][]string {
 	assignments := DistributeTrains(pathSet, totalTrains)
 
 	var activeTrains []*ActiveTrain
-	trainPointer := 0
+
+	// Tracks dispatched status so busy paths do not block available paths
+	dispatched := make([]bool, len(assignments))
+	dispatchedCount := 0
 
 	// Tracks the next turn when each path can accept a new train dispatch
 	pathNextAvailableTurn := make([]int, len(pathSet))
@@ -83,8 +87,12 @@ func RunScheduler(pathSet [][]string, totalTrains int) [][]string {
 		activeTrains = remainingActive
 
 		// 2. Dispatch waiting trains onto their assigned paths
-		for trainPointer < len(assignments) {
-			assign := assignments[trainPointer]
+		for i := 0; i < len(assignments); i++ {
+			if dispatched[i] {
+				continue
+			}
+
+			assign := assignments[i]
 			pIdx := assign.PathIndex
 
 			if pathNextAvailableTurn[pIdx] <= turn {
@@ -101,14 +109,13 @@ func RunScheduler(pathSet [][]string, totalTrains int) [][]string {
 				}
 
 				pathNextAvailableTurn[pIdx] = turn + 1
-				trainPointer++
-			} else {
-				break
+				dispatched[i] = true
+				dispatchedCount++
 			}
 		}
 
 		// Termination check: all trains dispatched and no active trains on tracks
-		if len(turnMoves) == 0 && trainPointer >= len(assignments) && len(activeTrains) == 0 {
+		if len(turnMoves) == 0 && dispatchedCount >= len(assignments) && len(activeTrains) == 0 {
 			break
 		}
 
