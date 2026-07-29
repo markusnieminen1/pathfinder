@@ -10,6 +10,18 @@ import (
 
 var RunningID int = 1
 
+func isValidStationName(name string) bool {
+	if len(name) == 0 {
+		return false
+	}
+	for _, ch := range name {
+		if !((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_') {
+			return false
+		}
+	}
+	return true
+}
+
 // Function to extract valid characters if the row is a comment
 func TrimLines(s_slice []string) []string {
 
@@ -88,6 +100,10 @@ func GetStationItems(s string) (string, [2]int, error) {
 
 	if name == "" {
 		return "", [2]int{}, errors.New("Station name cannot be empty. (index 0)" + s)
+	}
+
+	if !isValidStationName(name) {
+		return "", [2]int{}, errors.New("Invalid station name format: " + name)
 	}
 
 	coord1, err := strconv.Atoi(splitted[1])
