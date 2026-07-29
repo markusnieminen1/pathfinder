@@ -42,11 +42,14 @@ func ReadArgs() (filename, start_station, end_station string, count int, err err
 
 	if len(os.Args) > 1 && os.Args[1] == "-h" {
 		PrintHelp()
-
 	}
 
 	if len(os.Args) < 5 {
 		return "", "", "", 0, errors.New("Missing arguments.")
+	}
+
+	if len(os.Args) > 5 && os.Args[5] != "-v" && os.Args[5] != "-aid" && os.Args[5] != "-dfs" {
+		return "", "", "", 0, errors.New("Too many command line arguments.")
 	}
 
 	// Check the file is ok
@@ -73,6 +76,10 @@ func ReadArgs() (filename, start_station, end_station string, count int, err err
 
 	if len(end_station) < 1 {
 		return "", "", "", 0, errors.New("Invalid end station" + end_station)
+	}
+
+	if start_station == end_station {
+		return "", "", "", 0, errors.New("Start and end stations cannot be same")
 	}
 
 	count, err = strconv.Atoi(os.Args[4])

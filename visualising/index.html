@@ -21,7 +21,7 @@
     <kbd>←</kbd> <kbd>→</kbd> Step Turn &nbsp;|&nbsp; <kbd>Space</kbd> Play / Pause &nbsp;|&nbsp; <kbd>R</kbd> Reset
 </div>
 
-<svg viewBox="{{.ViewBox}}">
+<svg viewBox="{{.ViewBox}}" preserveAspectRatio="xMidYMid meet">
     <!-- Station Edge Connections -->
     {{range .Graph}}
     {{$station := .}}
@@ -44,15 +44,15 @@
 
     <!-- Base Station Nodes & Names -->
     {{range .Graph}}
-    <circle cx="{{index .Coordinates 0}}" cy="{{index .Coordinates 1}}" r="0.3" class="station-node" id="node-{{.Name}}" />
-    <text x="{{index .Coordinates 0}}" y="{{index .Coordinates 1}}" dx="0.5" dy="0.2" class="station-text">{{.Name}}</text>
+    <circle cx="{{index .Coordinates 0}}" cy="{{index .Coordinates 1}}" r="0.25" class="station-node" id="node-{{.Name}}" />
+    <text x="{{index .Coordinates 0}}" y="{{index .Coordinates 1}}" dx="0.35" dy="0.1" class="station-text">{{.Name}}</text>
     {{end}}
 
     <!-- Start Station -->
-    <circle cx="{{index .Start.Coordinates 0}}" cy="{{index .Start.Coordinates 1}}" r="1.0" class="start-node" />
+    <circle cx="{{index .Start.Coordinates 0}}" cy="{{index .Start.Coordinates 1}}" r="0.2" class="start-node" />
 
     <!-- End Station -->
-    <circle cx="{{index .End.Coordinates 0}}" cy="{{index .End.Coordinates 1}}" r="1.0" class="end-node" />
+    <circle cx="{{index .End.Coordinates 0}}" cy="{{index .End.Coordinates 1}}" r="0.2" class="end-node" />
 
     <!-- Dynamic Active Train Layer -->
     <g id="trainsLayer"></g>
@@ -110,7 +110,7 @@
             const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
             circle.setAttribute("cx", coords[0]);
             circle.setAttribute("cy", coords[1]);
-            circle.setAttribute("r", "1.1");
+            circle.setAttribute("r", "0.3");
 
             const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
             text.setAttribute("x", coords[0]);

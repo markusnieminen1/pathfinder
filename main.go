@@ -11,6 +11,7 @@ import (
 	"pathfinder/grid"
 	"pathfinder/visualising"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -50,6 +51,9 @@ func main() {
 
 	data.SetLoggingEnabled(arguments.Visualising)
 
+	// Start timing algorithm operations
+	startTime := time.Now()
+
 	Paths := algorithm.FindPathBFS(start_station, end_station, train_count, possible_paths)
 
 	var pathSet [][]string
@@ -70,6 +74,10 @@ func main() {
 	if len(pathSet) > 0 && train_count > 0 {
 		turns = algorithm.RunScheduler(pathSet, train_count)
 	}
+
+	// Calculate and print total execution time for pathfinding & scheduling
+	elapsed := time.Since(startTime)
+	fmt.Printf("\nTime taken: %v\n", elapsed)
 
 	if arguments.Visualising {
 		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

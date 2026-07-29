@@ -2,11 +2,9 @@ package algorithm
 
 import "pathfinder/data"
 
-func SelectOptimalCombination(allRoutes [][]*data.Station, maxPaths int) [][]*data.Station {
-
+func SelectOptimalCombination(allRoutes [][]*data.Station, maxPaths int, trainCount int) [][]*data.Station {
 	var bestCombination [][]*data.Station
-	var maxCount int
-	var minTotalLen int = 1000000
+	var minTotalTurns int = 1000000
 
 	hasConflict := func(route []*data.Station, selected [][]*data.Station) bool {
 		used := make(map[int]bool)
@@ -23,20 +21,39 @@ func SelectOptimalCombination(allRoutes [][]*data.Station, maxPaths int) [][]*da
 		return false
 	}
 
+	calculateTurns := func(combo [][]*data.Station) int {
+		if len(combo) == 0 {
+			return 1000000
+		}
+		pathCounts := make([]int, len(combo))
+		maxTurns := 0
+		for t := 0; t < trainCount; t++ {
+			bestIdx := 0
+			minCost := (len(combo[0]) - 1) + pathCounts[0]
+			for i := 1; i < len(combo); i++ {
+				cost := (len(combo[i]) - 1) + pathCounts[i]
+				if cost < minCost {
+					minCost = cost
+					bestIdx = i
+				}
+			}
+			pathCounts[bestIdx]++
+			if minCost > maxTurns {
+				maxTurns = minCost
+			}
+		}
+		return maxTurns
+	}
+
 	var backtrack func(startIdx int, current [][]*data.Station)
 	backtrack = func(startIdx int, current [][]*data.Station) {
-		currentCount := len(current)
-		currentTotalLen := 0
-		for _, r := range current {
-			currentTotalLen += len(r)
-		}
-
-		if currentCount > maxCount || (currentCount == maxCount && currentTotalLen < minTotalLen) {
-			maxCount = currentCount
-			minTotalLen = currentTotalLen
-
-			bestCombination = make([][]*data.Station, len(current))
-			copy(bestCombination, current)
+		if len(current) > 0 {
+			turns := calculateTurns(current)
+			if turns < minTotalTurns {
+				minTotalTurns = turns
+				bestCombination = make([][]*data.Station, len(current))
+				copy(bestCombination, current)
+			}
 		}
 
 		if len(current) >= maxPaths {
@@ -54,7 +71,7 @@ func SelectOptimalCombination(allRoutes [][]*data.Station, maxPaths int) [][]*da
 	return bestCombination
 }
 
-func FindPathBFS(start, end *data.Station, extraSteps, paths int) [][]*data.Station {
+func FindPathBFS(start, end *data.Station, trainCount, paths int) [][]*data.Station {
 	var allRoutes [][]*data.Station
 
 	type QueueItem struct {
@@ -84,7 +101,7 @@ func FindPathBFS(start, end *data.Station, extraSteps, paths int) [][]*data.Stat
 		if current.station.ID == end.ID {
 			if bestRouteLen == 0 {
 				bestRouteLen = len(current.path)
-				maxPathLen = bestRouteLen + extraSteps
+				maxPathLen = bestRouteLen + trainCount
 			}
 
 			routeCopy := make([]*data.Station, len(current.path))
@@ -119,5 +136,5 @@ func FindPathBFS(start, end *data.Station, extraSteps, paths int) [][]*data.Stat
 		}
 	}
 
-	return SelectOptimalCombination(allRoutes, paths)
+	return SelectOptimalCombination(allRoutes, paths, trainCount)
 }
