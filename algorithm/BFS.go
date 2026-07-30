@@ -1,74 +1,89 @@
 package algorithm
 
-import "pathfinder/data"
+import (
+	"pathfinder/data"
+)
 
-func SelectOptimalCombination(allRoutes [][]*data.Station, maxPaths int, trainCount int) [][]*data.Station {
-	var bestCombination [][]*data.Station
-	var minTotalTurns int = 1000000
+// Route pairs a route with a stable index used only for conflict lookups.
+type Route struct {
+	Index int
+	Path  []*data.Station
+}
 
-	hasConflict := func(route []*data.Station, selected [][]*data.Station) bool {
-		used := make(map[int]bool)
-		for _, r := range selected {
-			for i := 1; i < len(r)-1; i++ {
-				used[r[i].ID] = true
-			}
+// SAVES A LOT OF TIME TO PRECHECK SOME CASES ESPECIALLY FOR LARGE AMOUNT OF PATHS
+// CHECK EXISTENCE USING MAP WITH O(1) TIME
+func checkConflicts(routes []*Route) []map[int]bool {
+
+	conflicts := make([]map[int]bool, len(routes))
+	stationIncludedBy := map[*data.Station][]int{}
+
+	for _, route := range routes {
+
+		for _, station := range route.Path[1 : len(route.Path)-1] {
+			stationIncludedBy[station] = append(stationIncludedBy[station], route.Index)
 		}
-		for i := 1; i < len(route)-1; i++ {
-			if used[route[i].ID] {
-				return true
-			}
-		}
-		return false
 	}
 
-	calculateTurns := func(combo [][]*data.Station) int {
-		if len(combo) == 0 {
-			return 1000000
-		}
-		pathCounts := make([]int, len(combo))
-		maxTurns := 0
-		for t := 0; t < trainCount; t++ {
-			bestIdx := 0
-			minCost := (len(combo[0]) - 1) + pathCounts[0]
-			for i := 1; i < len(combo); i++ {
-				cost := (len(combo[i]) - 1) + pathCounts[i]
-				if cost < minCost {
-					minCost = cost
-					bestIdx = i
+	for index := range routes {
+		conflicts[index] = map[int]bool{}
+	}
+
+	for _, includedInPath := range stationIncludedBy {
+
+		// Double nested in order to check all values against each other
+		for _, i := range includedInPath {
+
+			for _, k := range includedInPath {
+
+				// I and k for ruling self out
+				if i != k {
+					conflicts[i][k] = true
 				}
 			}
-			pathCounts[bestIdx]++
-			if minCost > maxTurns {
-				maxTurns = minCost
-			}
-		}
-		return maxTurns
-	}
-
-	var backtrack func(startIdx int, current [][]*data.Station)
-	backtrack = func(startIdx int, current [][]*data.Station) {
-		if len(current) > 0 {
-			turns := calculateTurns(current)
-			if turns < minTotalTurns {
-				minTotalTurns = turns
-				bestCombination = make([][]*data.Station, len(current))
-				copy(bestCombination, current)
-			}
-		}
-
-		if len(current) >= maxPaths {
-			return
-		}
-
-		for i := startIdx; i < len(allRoutes); i++ {
-			if !hasConflict(allRoutes[i], current) {
-				backtrack(i+1, append(current, allRoutes[i]))
-			}
 		}
 	}
 
-	backtrack(0, [][]*data.Station{})
-	return bestCombination
+	return conflicts
+}
+
+// The idea is to try and match combinations until reaching bestMaxLen.
+// Fewer are ok, more are not desired (exponential unnecessary workload).
+// first check if len is valid, then the current combination is longer than the previous and finally
+func RecursiveCost(conflicts []map[int]bool, possibilities []*Route, current []*Route,
+	currentLength int, bestMaxLen int, bestCombination *[]*Route, bestTotalLength *int) {
+
+	// Rule out too long combinations !!! woohooo
+	if len(current) >= bestMaxLen {
+		if len(*bestCombination) == 0 || currentLength < *bestTotalLength {
+			*bestCombination = append([]*Route{}, current...)
+			*bestTotalLength = currentLength
+		}
+		return
+	}
+
+	if len(current)+len(possibilities) < bestMaxLen {
+		return
+	}
+
+	for rIndex, route := range possibilities {
+		remaining := make([]*Route, 0, len(possibilities))
+
+		// Loop the next items
+		for _, other := range possibilities[rIndex+1:] {
+
+			// Check if the route has been declared in BOTH
+			if !conflicts[route.Index][other.Index] {
+				remaining = append(remaining, other)
+			}
+		}
+
+		nextCurrent := make([]*Route, len(current), len(current)+1)
+		copy(nextCurrent, current)
+		nextCurrent = append(nextCurrent, route)
+
+		RecursiveCost(conflicts, remaining, nextCurrent, currentLength+len(route.Path),
+			bestMaxLen, bestCombination, bestTotalLength)
+	}
 }
 
 func FindPathBFS(start, end *data.Station, trainCount, paths int) [][]*data.Station {
@@ -136,5 +151,27 @@ func FindPathBFS(start, end *data.Station, trainCount, paths int) [][]*data.Stat
 		}
 	}
 
-	return SelectOptimalCombination(allRoutes, paths, trainCount)
+	routes := make([]*Route, len(allRoutes))
+	for i := range allRoutes {
+		routes[i] = &Route{Index: i, Path: allRoutes[i]}
+	}
+
+	conflicts := checkConflicts(routes)
+	candidates := make([]int, len(allRoutes))
+
+	for i := range candidates {
+		candidates[i] = i
+	}
+	var best []*Route
+	var bestTotalLength int
+
+	RecursiveCost(conflicts, routes, nil, 0, trainCount, &best, &bestTotalLength)
+
+	bestRoutes := make([][]*data.Station, len(best))
+	for i, r := range best {
+		bestRoutes[i] = r.Path
+	}
+
+	return bestRoutes
+
 }
