@@ -53,7 +53,7 @@ func RecursiveCost(conflicts []map[int]bool, possibilities []*Route, current []*
 	currentLength int, bestMaxLen int, bestCombination *[]*Route, bestTotalLength *int) {
 
 	// Rule out too long combinations !!! woohooo
-	if len(current) >= bestMaxLen {
+	if len(current) == bestMaxLen {
 		if len(*bestCombination) == 0 || currentLength < *bestTotalLength {
 			*bestCombination = append([]*Route{}, current...)
 			*bestTotalLength = currentLength
@@ -145,8 +145,7 @@ func FindPathBFS(start, end *data.Station, trainCount, paths int) [][]*data.Stat
 				queue = append(queue, QueueItem{
 					station: nextStation,
 					path:    newPath,
-					visited: newVisited,
-				})
+					visited: newVisited})
 			}
 		}
 	}
@@ -165,7 +164,7 @@ func FindPathBFS(start, end *data.Station, trainCount, paths int) [][]*data.Stat
 	var best []*Route
 	var bestTotalLength int
 
-	RecursiveCost(conflicts, routes, nil, 0, trainCount, &best, &bestTotalLength)
+	RecursiveCost(conflicts, routes, nil, 0, paths, &best, &bestTotalLength)
 
 	bestRoutes := make([][]*data.Station, len(best))
 	for i, r := range best {
