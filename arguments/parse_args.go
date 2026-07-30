@@ -84,6 +84,10 @@ func ReadArgs() (filename, start_station, end_station string, count int, err err
 
 	count, err = strconv.Atoi(os.Args[4])
 
+	if count < 1 {
+		return "", "", "", 0, errors.New("Given train count is not a valid positive integer number larger than 0: " + os.Args[4])
+	}
+
 	if err != nil {
 		return "", "", "", 0, errors.New("Given train count is not a valid integer number: " + os.Args[4])
 	}

@@ -85,6 +85,10 @@ func ExtractStationsConnections(s_slice []string) (stations, connections []strin
 	if len(stations) < 2 || len(connections) < 2 {
 		return nil, nil, errors.New("Not enough stations (min 2) or connections (min 2)")
 	}
+
+	if len(stations) > 10000  {
+		return nil, nil, errors.New("Too many stations (max 10000)")
+	}
 	return
 }
 
@@ -164,11 +168,19 @@ func CreateConnection(s string) error {
 
 	station1, found := data.StationsMap[stations[0]]
 
+	if !isValidStationName(stations[0]) {
+		return errors.New("Invalid station name format in connections: " + stations[0])
+	}
+
 	if !found {
 		return errors.New("Station does not exist in the grid: " + stations[0])
 	}
 
 	station2, found := data.StationsMap[stations[1]]
+
+	if !isValidStationName(stations[1]) {
+		return errors.New("Invalid station name format in connections: " + stations[1])
+	}
 
 	if !found {
 		return errors.New("Station does not exist in the grid: " + stations[1])
