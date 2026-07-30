@@ -48,7 +48,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Error: No route between given start&end stations")
 		os.Exit(1)
 	}
-
 	data.SetLoggingEnabled(arguments.Visualising)
 
 	// Start timing algorithm operations
@@ -57,6 +56,7 @@ func main() {
 	Paths := algorithm.FindPathBFS(start_station, end_station, train_count, possible_paths)
 
 	var pathSet [][]string
+
 	if len(Paths) > 0 {
 		for _, pathPtr := range Paths {
 			var singlePath []string
