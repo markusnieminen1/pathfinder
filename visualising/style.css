@@ -85,7 +85,7 @@ svg {
 
 /* SVG Element Styling */
 .grid-line {
-    stroke: #334155;
+    stroke: #f5ff42;
     stroke-width: 0.06;
     vector-effect: non-scaling-stroke;
 }

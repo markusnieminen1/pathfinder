@@ -1,140 +1,189 @@
 package algorithm
 
-import "pathfinder/data"
+import (
+	"pathfinder/data"
+)
 
-func SelectOptimalCombination(allRoutes [][]*data.Station, maxPaths int, trainCount int) [][]*data.Station {
-	var bestCombination [][]*data.Station
-	var minTotalTurns int = 1000000
-
-	hasConflict := func(route []*data.Station, selected [][]*data.Station) bool {
-		used := make(map[int]bool)
-		for _, r := range selected {
-			for i := 1; i < len(r)-1; i++ {
-				used[r[i].ID] = true
-			}
-		}
-		for i := 1; i < len(route)-1; i++ {
-			if used[route[i].ID] {
-				return true
-			}
-		}
-		return false
+// SelectOptimalCombination calculates turns for a path set given train count.
+func calculateTurns(paths [][]*data.Station, trainCount int) int {
+	if len(paths) == 0 {
+		return 1000000
 	}
-
-	calculateTurns := func(combo [][]*data.Station) int {
-		if len(combo) == 0 {
-			return 1000000
-		}
-		pathCounts := make([]int, len(combo))
-		maxTurns := 0
-		for t := 0; t < trainCount; t++ {
-			bestIdx := 0
-			minCost := (len(combo[0]) - 1) + pathCounts[0]
-			for i := 1; i < len(combo); i++ {
-				cost := (len(combo[i]) - 1) + pathCounts[i]
-				if cost < minCost {
-					minCost = cost
-					bestIdx = i
-				}
-			}
-			pathCounts[bestIdx]++
-			if minCost > maxTurns {
-				maxTurns = minCost
+	pathCounts := make([]int, len(paths))
+	maxTurns := 0
+	for t := 0; t < trainCount; t++ {
+		bestIdx := 0
+		minCost := (len(paths[0]) - 1) + pathCounts[0]
+		for i := 1; i < len(paths); i++ {
+			cost := (len(paths[i]) - 1) + pathCounts[i]
+			if cost < minCost {
+				minCost = cost
+				bestIdx = i
 			}
 		}
-		return maxTurns
-	}
-
-	var backtrack func(startIdx int, current [][]*data.Station)
-	backtrack = func(startIdx int, current [][]*data.Station) {
-		if len(current) > 0 {
-			turns := calculateTurns(current)
-			if turns < minTotalTurns {
-				minTotalTurns = turns
-				bestCombination = make([][]*data.Station, len(current))
-				copy(bestCombination, current)
-			}
-		}
-
-		if len(current) >= maxPaths {
-			return
-		}
-
-		for i := startIdx; i < len(allRoutes); i++ {
-			if !hasConflict(allRoutes[i], current) {
-				backtrack(i+1, append(current, allRoutes[i]))
-			}
+		pathCounts[bestIdx]++
+		if minCost > maxTurns {
+			maxTurns = minCost
 		}
 	}
-
-	backtrack(0, [][]*data.Station{})
-	return bestCombination
+	return maxTurns
 }
 
-func FindPathBFS(start, end *data.Station, trainCount, paths int) [][]*data.Station {
-	var allRoutes [][]*data.Station
-
-	type QueueItem struct {
-		station *data.Station
-		path    []*data.Station
-		visited map[int]bool
+// FindPathBFS finds the optimal set of node-disjoint paths using
+// Edmonds-Karp flow augmentation on a node-split residual graph.
+func FindPathBFS(start, end *data.Station, trainCount, maxPaths int) [][]*data.Station {
+	if start == nil || end == nil || start.ID == end.ID {
+		return nil
 	}
 
-	queue := []QueueItem{{
-		station: start,
-		path:    []*data.Station{start},
-		visited: map[int]bool{start.ID: true},
-	}}
+	// Map stations by ID for fast lookup
+	stationByID := make(map[int]*data.Station)
+	for _, st := range data.StationsMap {
+		stationByID[st.ID] = st
+	}
 
-	maxPathLen := 1000000
-	bestRouteLen := 0
-	head := 0
+	inNode := func(id int) int { return 2 * id }
+	outNode := func(id int) int { return 2*id + 1 }
 
-	for head < len(queue) {
-		current := queue[head]
-		head++
+	startOut := outNode(start.ID)
+	endIn := inNode(end.ID)
 
-		if len(current.path) > maxPathLen {
-			continue
+	adj := make(map[int][]int)
+	capacity := make(map[int]map[int]int)
+	initialCapacity := make(map[int]map[int]int)
+
+	addEdge := func(u, v, cap int) {
+		adj[u] = append(adj[u], v)
+		adj[v] = append(adj[v], u)
+
+		if capacity[u] == nil {
+			capacity[u] = make(map[int]int)
+			initialCapacity[u] = make(map[int]int)
+		}
+		if capacity[v] == nil {
+			capacity[v] = make(map[int]int)
+			initialCapacity[v] = make(map[int]int)
 		}
 
-		if current.station.ID == end.ID {
-			if bestRouteLen == 0 {
-				bestRouteLen = len(current.path)
-				maxPathLen = bestRouteLen + trainCount
-			}
+		capacity[u][v] = cap
+		capacity[v][u] = 0
+		initialCapacity[u][v] = cap
+		initialCapacity[v][u] = 0
+	}
 
-			routeCopy := make([]*data.Station, len(current.path))
-			copy(routeCopy, current.path)
-			allRoutes = append(allRoutes, routeCopy)
-			continue
+	// 1. Build Node-Split Graph
+	for _, st := range data.StationsMap {
+		if st.ID != start.ID && st.ID != end.ID {
+			addEdge(inNode(st.ID), outNode(st.ID), 1)
 		}
+	}
 
-		for _, nextStation := range current.station.Connections {
-			if current.visited[nextStation.ID] {
-				continue
+	// 2. Build Connections
+	for _, st := range data.StationsMap {
+		for _, conn := range st.Connections {
+			if st.ID < conn.ID { // Avoid duplicate edge addition
+				addEdge(outNode(st.ID), inNode(conn.ID), 1)
+				addEdge(outNode(conn.ID), inNode(st.ID), 1)
+			}
+		}
+	}
+
+	var bestPathSet [][]*data.Station
+	minTurns := 1000000
+
+	// 3. Iterative Augmenting Paths Loop
+	for k := 1; k <= maxPaths; k++ {
+		parent := make(map[int]int)
+		visited := make(map[int]bool)
+
+		queue := []int{startOut}
+		visited[startOut] = true
+		found := false
+
+		for len(queue) > 0 {
+			curr := queue[0]
+			queue = queue[1:]
+
+			if curr == endIn {
+				found = true
+				break
 			}
 
-			newPathLen := len(current.path) + 1
-			if newPathLen <= maxPathLen {
-				newVisited := make(map[int]bool, len(current.visited)+1)
-				for k, v := range current.visited {
-					newVisited[k] = v
+			for _, nextNode := range adj[curr] {
+				if !visited[nextNode] && capacity[curr][nextNode] > 0 {
+					visited[nextNode] = true
+					parent[nextNode] = curr
+					queue = append(queue, nextNode)
 				}
-				newVisited[nextStation.ID] = true
-
-				newPath := make([]*data.Station, newPathLen)
-				copy(newPath, current.path)
-				newPath[len(current.path)] = nextStation
-
-				queue = append(queue, QueueItem{
-					station: nextStation,
-					path:    newPath,
-					visited: newVisited,
-				})
 			}
+		}
+
+		if !found {
+			break // No more disjoint paths available
+		}
+
+		// Augment flow along shortest path
+		curr := endIn
+		for curr != startOut {
+			p := parent[curr]
+			capacity[p][curr] -= 1
+			capacity[curr][p] += 1
+			curr = p
+		}
+
+		// Extract active disjoint paths
+		currentPaths := extractPaths(start, end, capacity, initialCapacity, stationByID)
+		turns := calculateTurns(currentPaths, trainCount)
+
+		if turns < minTurns {
+			minTurns = turns
+			bestPathSet = currentPaths
+		} else if turns > minTurns+5 {
+			// Stop if adding extra paths starts degrading performance significantly
+			break
 		}
 	}
 
-	return SelectOptimalCombination(allRoutes, paths, trainCount)
+	return bestPathSet
+}
+
+// extractPaths traces active flow edges to reconstruct vertex-disjoint paths.
+func extractPaths(start, end *data.Station, capacity, initialCapacity map[int]map[int]int, stationByID map[int]*data.Station) [][]*data.Station {
+	var paths [][]*data.Station
+	startOut := 2*start.ID + 1
+	endIn := 2 * end.ID
+
+	// Find all active outgoing edges from start
+	for v, initCap := range initialCapacity[startOut] {
+		if initCap == 1 && capacity[startOut][v] == 0 {
+			// Follow path from v
+			path := []*data.Station{start}
+			currNode := v
+
+			for currNode != endIn {
+				stID := currNode / 2
+				st := stationByID[stID]
+				path = append(path, st)
+
+				outN := 2*stID + 1
+				// Step to next station's in-node
+				nextIn := -1
+				for nextCandidate, ic := range initialCapacity[outN] {
+					if ic == 1 && capacity[outN][nextCandidate] == 0 {
+						nextIn = nextCandidate
+						break
+					}
+				}
+				if nextIn == -1 {
+					break
+				}
+				currNode = nextIn
+			}
+
+			path = append(path, end)
+			paths = append(paths, path)
+		}
+	}
+
+	return paths
 }
